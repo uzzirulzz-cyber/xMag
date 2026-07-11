@@ -106,6 +106,47 @@ model ContentCategory {
   createdAt DateTime @default(now())
 }
 
+// A content package / bouquet — a bundle of channels sold together.
+model Package {
+  id          String   @id @default(cuid())
+  name        String   // "Sports Pack", "Pakistani Channels", "English Movies"
+  type        String   // live | vod | series
+  description String?
+  color       String   // accent hex for the card
+  icon        String   // lucide icon name
+  channelCount Int     @default(0) // denormalized count of channels in this package
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  channels    Channel[]
+}
+
+// A single streamable channel / VOD item / series with live viewership.
+model Channel {
+  id            String   @id @default(cuid())
+  packageId     String
+  name          String   // "ARY Digital", "PTV Sports", "Sky Sports Main Event"
+  type          String   // live | vod | series
+  category      String   // Sports, News, Entertainment, Movies, Kids, Documentary, Music, Religious
+  country       String   // PK, IN, UK, US, AR, etc.
+  logoText      String   // short label for the avatar (channel initials)
+  color         String   // accent hex
+  epgNow        String?  // current programme title
+  epgNext       String?  // next programme title
+  streamUrl     String   // get.php-style or internal stream reference
+  currentViewers Int     @default(0) // clients watching right now
+  hd            Boolean  @default(true)
+  active        Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  package       Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@index([packageId, type])
+  @@index([category])
+  @@index([country])
+}
+
 // An IPTV line created by a reseller, spending credit from their balance.
 model Subscription {
   id               String   @id @default(cuid())

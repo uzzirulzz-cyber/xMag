@@ -34,6 +34,10 @@ export async function ensureSeed() {
   const { ensureContentCategories } = await import('@/lib/subscriptions')
   await ensureContentCategories()
 
+  // Seed packages + channels with live viewership for the Channels browser
+  const { ensurePackagesAndChannels } = await import('@/lib/channels')
+  await ensurePackagesAndChannels()
+
   let reseller = await db.reseller.findFirst({
     where: { username: 'starreseller' },
   })

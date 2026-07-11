@@ -133,6 +133,57 @@ export interface ConnectionLog {
   durationSec: number | null
 }
 
+export interface ChannelPackage {
+  id: string
+  name: string
+  type: 'live' | 'vod' | 'series'
+  description: string | null
+  color: string
+  icon: string
+  channelCount: number
+  totalViewers: number
+  sortOrder: number
+}
+
+export interface Channel {
+  id: string
+  packageId: string
+  name: string
+  type: 'live' | 'vod' | 'series'
+  category: string
+  country: string
+  logoText: string
+  color: string
+  epgNow: string | null
+  epgNext: string | null
+  streamUrl: string
+  currentViewers: number
+  hd: boolean
+  active: boolean
+  sortOrder: number
+  package?: { name: string; color: string }
+}
+
+export interface ChannelStats {
+  totalChannels: number
+  totalViewers: number
+  activeChannels: number
+  packages: number
+  topChannels: Array<{
+    id: string
+    name: string
+    currentViewers: number
+    category: string
+    country: string
+    logoText: string
+    color: string
+    packageName: string
+  }>
+  byCategory: Array<{ category: string; viewers: number; channels: number }>
+  byCountry: Array<{ country: string; viewers: number; channels: number }>
+  byType: Array<{ type: string; viewers: number; channels: number }>
+}
+
 export type NotificationType = 'info' | 'success' | 'warning' | 'fund' | 'subscription' | 'system'
 
 export interface AppNotification {

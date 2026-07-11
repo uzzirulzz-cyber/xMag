@@ -10,6 +10,7 @@ import { AddFunds } from '@/components/panel/add-funds'
 import { TransactionHistory } from '@/components/panel/transaction-history'
 import { MySubscriptions } from '@/components/panel/my-subscriptions'
 import { CustomSubscriptionDialog } from '@/components/panel/custom-subscription-dialog'
+import { ChannelsAndPackages } from '@/components/panel/channels-and-packages'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -115,6 +116,9 @@ export default function Home() {
 
           {/* My subscriptions */}
           <MySubscriptions onNew={() => setSubDialogOpen(true)} balance={overview?.balance ?? 0} />
+
+          {/* Channels & Packages */}
+          <ChannelsAndPackages />
 
           {/* Add funds + quick tips */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
