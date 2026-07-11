@@ -19,12 +19,20 @@ import {
   Hd,
   Play,
   Inbox,
+  Lock,
+  ShieldAlert,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -34,6 +42,7 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { formatNumber } from '@/lib/format'
+import { useToast } from '@/hooks/use-toast'
 import type { Channel, ChannelPackage, ChannelStats } from './types'
 
 const TYPE_ICON: Record<string, React.ElementType> = {
@@ -60,6 +69,9 @@ export function ChannelsAndPackages() {
   const [countryFilter, setCountryFilter] = useState<string>('all')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [adultUnlocked, setAdultUnlocked] = useState(false)
+  const [pinDialogOpen, setPinDialogOpen] = useState(false)
+  const { toast } = useToast()
 
   // Stats
   const { data: stats, isLoading: statsLoading } = useQuery<ChannelStats>({
@@ -111,8 +123,8 @@ export function ChannelsAndPackages() {
         <StatCard
           icon={Tv}
           label="Total Channels"
-          value={stats ? formatNumber(stats.totalChannels) : '—'}
-          sub={stats ? `${stats.packages} packages` : 'Loading…'}
+          value={stats ? `${formatNumber(stats.advertisedTotal)}+` : '—'}
+          sub={stats ? `${formatNumber(stats.totalChannels)} browsable · ${stats.packages} packages` : 'Loading…'}
           color="text-primary"
           bg="bg-primary/10"
           loading={statsLoading}
@@ -166,16 +178,27 @@ export function ChannelsAndPackages() {
           />
           {packages.map((p) => {
             const Icon = TYPE_ICON[p.type] || Tv
+            const locked = p.pinProtected && !adultUnlocked
             return (
               <PackageCard
                 key={p.id}
                 name={p.name}
                 icon={Icon}
                 color={p.color}
-                channelCount={p.channelCount}
+                channelCount={p.advertisedCount || p.channelCount}
                 totalViewers={p.totalViewers}
                 active={selectedPackage === p.id}
-                onClick={() => { setSelectedPackage(p.id); setPage(1) }}
+                isAdult={p.isAdult}
+                pinProtected={p.pinProtected}
+                locked={locked}
+                onClick={() => {
+                  if (locked) {
+                    setPinDialogOpen(true)
+                    return
+                  }
+                  setSelectedPackage(p.id)
+                  setPage(1)
+                }}
               />
             )
           })}
@@ -254,7 +277,13 @@ export function ChannelsAndPackages() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {channels.map((c) => <ChannelCard key={c.id} c={c} />)}
+              {channels.map((c) => (
+                <ChannelCard
+                  key={c.id}
+                  c={c}
+                  locked={c.category === 'Adult' && !adultUnlocked}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -338,7 +367,89 @@ export function ChannelsAndPackages() {
           </Card>
         </div>
       )}
+
+      {/* Adult content PIN dialog */}
+      <PinDialog
+        open={pinDialogOpen}
+        onOpenChange={setPinDialogOpen}
+        onUnlock={() => {
+          setAdultUnlocked(true)
+          setPinDialogOpen(false)
+          toast({ title: 'Adult content unlocked', description: 'PIN accepted. Adult channels are now visible.' })
+        }}
+      />
     </div>
+  )
+}
+
+function PinDialog({
+  open,
+  onOpenChange,
+  onUnlock,
+}: {
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  onUnlock: () => void
+}) {
+  const [pin, setPin] = useState('')
+  const [error, setError] = useState(false)
+  const DEMO_PIN = '1234'
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (pin === DEMO_PIN) {
+      setError(false)
+      setPin('')
+      onUnlock()
+    } else {
+      setError(true)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) { setPin(''); setError(false) } }}>
+      <DialogContent className="max-w-sm w-[95vw] p-0 gap-0">
+        <div className="flex items-center gap-2.5 bg-gradient-to-r from-violet-600 to-purple-700 px-5 py-4 text-white rounded-t-lg">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 backdrop-blur">
+            <Lock className="h-5 w-5" />
+          </span>
+          <div>
+            <DialogTitle className="text-base font-semibold leading-tight">Adult Content — PIN Required</DialogTitle>
+            <DialogDescription className="text-white/80 text-xs leading-tight">
+              18+ content is locked. Enter your reseller PIN to continue.
+            </DialogDescription>
+          </div>
+        </div>
+        <form onSubmit={submit} className="p-5 space-y-4">
+          <div className="rounded-lg border border-violet-300/40 bg-violet-500/5 p-3 flex gap-2 text-xs text-muted-foreground">
+            <ShieldAlert className="h-4 w-4 shrink-0 text-violet-600 mt-0.5" />
+            <p>
+              This package contains adult content restricted to viewers aged 18+.
+              Access is gated behind a PIN to prevent unauthorised viewing.
+              <span className="block mt-1 font-medium text-foreground">Demo PIN: 1234</span>
+            </p>
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="adult-pin" className="text-xs font-medium">Enter PIN</label>
+            <Input
+              id="adult-pin"
+              type="password"
+              inputMode="numeric"
+              maxLength={4}
+              value={pin}
+              onChange={(e) => { setPin(e.target.value.replace(/\D/g, '')); setError(false) }}
+              placeholder="••••"
+              className="text-center text-2xl tracking-[0.5em] font-bold h-14"
+              autoFocus
+            />
+            {error && <p className="text-xs text-destructive">Incorrect PIN. Please try again.</p>}
+          </div>
+          <Button type="submit" className="w-full bg-violet-600 hover:bg-violet-700 text-white" disabled={pin.length < 4}>
+            <Lock className="h-4 w-4" /> Unlock Adult Content
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -377,7 +488,7 @@ function StatCard({
 }
 
 function PackageCard({
-  name, icon: Icon, color, channelCount, totalViewers, active, onClick,
+  name, icon: Icon, color, channelCount, totalViewers, active, isAdult, pinProtected, locked, onClick,
 }: {
   name: string
   icon: React.ElementType
@@ -385,6 +496,9 @@ function PackageCard({
   channelCount: number
   totalViewers: number
   active: boolean
+  isAdult?: boolean
+  pinProtected?: boolean
+  locked?: boolean
   onClick: () => void
 }) {
   return (
@@ -392,26 +506,38 @@ function PackageCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'group relative flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all',
+        'group relative flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all overflow-hidden',
         active ? 'border-primary bg-primary/5 ring-1 ring-primary/30' : 'border-border hover:border-primary/40 hover:bg-muted/40',
+        locked && 'select-none',
       )}
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white shadow-sm" style={{ backgroundColor: color }}>
-        <Icon className="h-4.5 w-4.5" />
+        {locked ? <Lock className="h-[18px] w-[18px]" /> : <Icon className="h-[18px] w-[18px]" />}
       </span>
       <div className="min-w-0 w-full">
-        <p className="text-xs font-semibold leading-tight truncate">{name}</p>
-        <p className="text-[10px] text-muted-foreground mt-0.5">{channelCount} channels</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-xs font-semibold leading-tight truncate">{name}</p>
+          {isAdult && (
+            <Badge className="shrink-0 h-4 px-1 text-[8px] font-bold bg-violet-600 text-white">18+</Badge>
+          )}
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-0.5">{formatNumber(channelCount)} channels</p>
       </div>
-      <div className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
-        <Users className="h-2.5 w-2.5" />
-        {formatNumber(totalViewers)}
-      </div>
+      {locked ? (
+        <div className="flex items-center gap-1 text-[10px] text-violet-600 dark:text-violet-400 font-medium">
+          <ShieldAlert className="h-2.5 w-2.5" /> PIN required
+        </div>
+      ) : (
+        <div className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+          <Users className="h-2.5 w-2.5" />
+          {formatNumber(totalViewers)}
+        </div>
+      )}
     </button>
   )
 }
 
-function ChannelCard({ c }: { c: Channel }) {
+function ChannelCard({ c, locked }: { c: Channel; locked?: boolean }) {
   const [hovered, setHovered] = useState(false)
   const isLive = c.type === 'live' && c.currentViewers > 0
   const TypeIcon = TYPE_ICON[c.type] || Tv
@@ -419,10 +545,19 @@ function ChannelCard({ c }: { c: Channel }) {
 
   return (
     <div
-      className="group relative rounded-xl border border-border bg-card p-3 transition-all hover:border-primary/40 hover:shadow-md"
+      className={cn(
+        'group relative rounded-xl border border-border bg-card p-3 transition-all hover:border-primary/40 hover:shadow-md',
+        locked && 'blur-[6px] pointer-events-none select-none',
+      )}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
+      {locked && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-1 rounded-xl bg-violet-950/40 backdrop-blur-sm pointer-events-auto">
+          <Lock className="h-5 w-5 text-white" />
+          <span className="text-[10px] font-semibold text-white">PIN locked</span>
+        </div>
+      )}
       {/* Header: logo + name + viewers */}
       <div className="flex items-start gap-2.5">
         <span

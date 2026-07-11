@@ -5,11 +5,12 @@ export const dynamic = 'force-dynamic'
 
 // GET /api/funds/channels/stats — aggregate viewership metrics for the stats bar
 export async function GET() {
-  const [totalChannels, totalViewers, activeChannels, packages, topChannels, byCategory, byCountry, byType] = await Promise.all([
+  const [totalChannels, totalViewers, activeChannels, packages, advertisedTotal, topChannels, byCategory, byCountry, byType] = await Promise.all([
     db.channel.count({ where: { active: true } }),
     db.channel.aggregate({ where: { active: true }, _sum: { currentViewers: true } }),
     db.channel.count({ where: { active: true, currentViewers: { gt: 0 } } }),
     db.package.count({ where: { active: true } }),
+    db.package.aggregate({ where: { active: true }, _sum: { advertisedCount: true } }),
     db.channel.findMany({
       where: { active: true },
       orderBy: { currentViewers: 'desc' },
@@ -39,7 +40,8 @@ export async function GET() {
   ])
 
   return NextResponse.json({
-    totalChannels,
+    totalChannels: totalChannels,
+    advertisedTotal: advertisedTotal._sum.advertisedCount ?? 0,
     totalViewers: totalViewers._sum.currentViewers ?? 0,
     activeChannels,
     packages,

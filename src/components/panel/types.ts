@@ -141,6 +141,9 @@ export interface ChannelPackage {
   color: string
   icon: string
   channelCount: number
+  advertisedCount: number
+  isAdult: boolean
+  pinProtected: boolean
   totalViewers: number
   sortOrder: number
 }
@@ -166,6 +169,7 @@ export interface Channel {
 
 export interface ChannelStats {
   totalChannels: number
+  advertisedTotal: number
   totalViewers: number
   activeChannels: number
   packages: number

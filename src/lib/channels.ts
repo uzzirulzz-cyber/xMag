@@ -19,6 +19,9 @@ export interface PackageSeed {
   description: string
   color: string
   icon: string
+  advertisedCount: number // marketing total shown to clients
+  isAdult?: boolean
+  pinProtected?: boolean
   channels: ChannelSeed[]
 }
 
@@ -26,6 +29,10 @@ export interface PackageSeed {
  * Seed packages (bouquets) and channels with realistic viewer counts.
  * Channel names are representative of real IPTV lineups; viewer counts
  * simulate concurrent connections from the reseller's client lines.
+ *
+ * `advertisedCount` reflects the marketing total (e.g. "2,500 channels")
+ * while only a curated sample is seeded as browsable rows — mirroring how
+ * real IPTV panels advertise large catalogues.
  */
 export async function ensurePackagesAndChannels() {
   const pkgCount = await db.package.count()
@@ -42,6 +49,9 @@ export async function ensurePackagesAndChannels() {
         color: p.color,
         icon: p.icon,
         channelCount: channels.length,
+        advertisedCount: p.advertisedCount,
+        isAdult: p.isAdult ?? false,
+        pinProtected: p.pinProtected ?? false,
         sortOrder: i + 1,
       },
     })
@@ -78,6 +88,7 @@ const C = {
   documentary: '#0d9488',
   music: '#db2777',
   religious: '#65a30d',
+  adult: '#9333ea',
 }
 
 const PACKAGES: PackageSeed[] = [
@@ -87,6 +98,7 @@ const PACKAGES: PackageSeed[] = [
     description: 'All major Pakistani TV channels — news, drama, sports and entertainment.',
     color: '#16a34a',
     icon: 'Flag',
+    advertisedCount: 1850,
     channels: [
       { name: 'ARY Digital', type: 'live', category: 'Entertainment', country: 'PK', logoText: 'ARY', color: C.entertainment, epgNow: 'Mere Humnasheen', epgNext: 'Bhool', currentViewers: 184, hd: true },
       { name: 'Geo Entertainment', type: 'live', category: 'Entertainment', country: 'PK', logoText: 'GEO', color: C.entertainment, epgNow: 'Tere Bin', epgNext: 'Khaani', currentViewers: 156, hd: true },
@@ -108,6 +120,7 @@ const PACKAGES: PackageSeed[] = [
     description: 'Top Indian entertainment, sports and news channels.',
     color: '#dc2626',
     icon: 'Tv',
+    advertisedCount: 2480,
     channels: [
       { name: 'Star Plus', type: 'live', category: 'Entertainment', country: 'IN', logoText: 'SP', color: C.entertainment, epgNow: 'Anupamaa', epgNext: 'Yeh Rishta', currentViewers: 234, hd: true },
       { name: 'Sony TV', type: 'live', category: 'Entertainment', country: 'IN', logoText: 'SNY', color: C.entertainment, epgNow: 'CID', epgNext: 'Indian Idol', currentViewers: 198, hd: true },
@@ -129,6 +142,7 @@ const PACKAGES: PackageSeed[] = [
     description: 'Premium English-language channels from the UK and United States.',
     color: '#0891b2',
     icon: 'Globe',
+    advertisedCount: 3200,
     channels: [
       { name: 'Sky Sports Main Event', type: 'live', category: 'Sports', country: 'UK', logoText: 'SKY', color: C.sports, epgNow: 'Live: Premier League', epgNext: 'Football Show', currentViewers: 398, hd: true },
       { name: 'Sky Sports Cricket', type: 'live', category: 'Sports', country: 'UK', logoText: 'SKY', color: C.sports, epgNow: 'Live: The Ashes', epgNext: 'Cricket Debate', currentViewers: 245, hd: true },
@@ -152,6 +166,7 @@ const PACKAGES: PackageSeed[] = [
     description: 'Arabic entertainment, news, sports and religious channels.',
     color: '#ea580c',
     icon: 'Globe2',
+    advertisedCount: 1600,
     channels: [
       { name: 'beIN Sports 1 HD', type: 'live', category: 'Sports', country: 'AR', logoText: 'b1', color: C.sports, epgNow: 'Live: AFC Champions League', epgNext: 'Sports News', currentViewers: 367, hd: true },
       { name: 'beIN Sports 2 HD', type: 'live', category: 'Sports', country: 'AR', logoText: 'b2', color: C.sports, epgNow: 'Live: La Liga', epgNext: 'Match Analysis', currentViewers: 234, hd: true },
@@ -171,6 +186,7 @@ const PACKAGES: PackageSeed[] = [
     description: 'Dedicated sports package — cricket, football, UFC, wrestling and more.',
     color: '#16a34a',
     icon: 'Trophy',
+    advertisedCount: 980,
     channels: [
       { name: 'Sky Sports Premier League', type: 'live', category: 'Sports', country: 'UK', logoText: 'SKY', color: C.sports, epgNow: 'Live: Man City vs Arsenal', epgNext: 'PL Review', currentViewers: 445, hd: true },
       { name: 'Sky Sports F1', type: 'live', category: 'Sports', country: 'UK', logoText: 'F1', color: C.sports, epgNow: 'Live: Grand Prix', epgNext: 'F1 Show', currentViewers: 198, hd: true },
@@ -188,6 +204,7 @@ const PACKAGES: PackageSeed[] = [
     description: 'On-demand movies — Hollywood, Bollywood and regional cinema.',
     color: '#7c3aed',
     icon: 'Film',
+    advertisedCount: 4200,
     channels: [
       { name: 'Netflix Movies', type: 'vod', category: 'Movies', country: 'US', logoText: 'NF', color: C.movies, epgNow: 'Extraction 2', epgNext: 'Red Notice', currentViewers: 312, hd: true },
       { name: 'Prime Video', type: 'vod', category: 'Movies', country: 'US', logoText: 'PV', color: C.movies, epgNow: 'The Tomorrow War', epgNext: 'Air', currentViewers: 198, hd: true },
@@ -207,6 +224,7 @@ const PACKAGES: PackageSeed[] = [
     description: 'Binge-worthy TV series — English, Hindi, Turkish and Arabic.',
     color: '#db2777',
     icon: 'Clapperboard',
+    advertisedCount: 3500,
     channels: [
       { name: 'Netflix Series', type: 'series', category: 'Entertainment', country: 'US', logoText: 'NF', color: C.entertainment, epgNow: 'Stranger Things S5', epgNext: 'Wednesday', currentViewers: 287, hd: true },
       { name: 'HBO Series', type: 'series', category: 'Entertainment', country: 'US', logoText: 'HBO', color: C.entertainment, epgNow: 'House of the Dragon', epgNext: 'The Last of Us', currentViewers: 234, hd: true },
@@ -216,6 +234,28 @@ const PACKAGES: PackageSeed[] = [
       { name: 'Anime Series', type: 'series', category: 'Entertainment', country: 'IN', logoText: 'AN', color: C.entertainment, epgNow: 'One Piece', epgNext: 'Demon Slayer', currentViewers: 112, hd: true },
       { name: 'K-Drama', type: 'series', category: 'Entertainment', country: 'IN', logoText: 'KD', color: C.entertainment, epgNow: 'Squid Game', epgNext: 'All of Us Are Dead', currentViewers: 89, hd: true },
       { name: 'Arabic Series', type: 'series', category: 'Entertainment', country: 'AR', logoText: 'AS', color: C.entertainment, epgNow: 'Bab Al Hara', epgNext: 'Al Hayba', currentViewers: 56, hd: true },
+    ],
+  },
+  {
+    name: 'Adult / 18+ (PIN)',
+    type: 'live',
+    description: 'Adult content — PIN-protected. Access restricted to authorised resellers only.',
+    color: '#9333ea',
+    icon: 'Lock',
+    advertisedCount: 240,
+    isAdult: true,
+    pinProtected: true,
+    channels: [
+      { name: 'Adult Channel 01', type: 'live', category: 'Adult', country: 'US', logoText: '18+', color: C.adult, epgNow: 'Programming', epgNext: 'Programming', currentViewers: 87, hd: true },
+      { name: 'Adult Channel 02', type: 'live', category: 'Adult', country: 'US', logoText: '18+', color: C.adult, epgNow: 'Programming', epgNext: 'Programming', currentViewers: 64, hd: true },
+      { name: 'Adult Channel 03', type: 'live', category: 'Adult', country: 'EU', logoText: '18+', color: C.adult, epgNow: 'Programming', epgNext: 'Programming', currentViewers: 52, hd: true },
+      { name: 'Adult Channel 04', type: 'live', category: 'Adult', country: 'EU', logoText: '18+', color: C.adult, epgNow: 'Programming', epgNext: 'Programming', currentViewers: 41, hd: false },
+      { name: 'Adult Channel 05', type: 'live', category: 'Adult', country: 'US', logoText: '18+', color: C.adult, epgNow: 'Programming', epgNext: 'Programming', currentViewers: 38, hd: true },
+      { name: 'Adult Channel 06', type: 'live', category: 'Adult', country: 'EU', logoText: '18+', color: C.adult, epgNow: 'Programming', epgNext: 'Programming', currentViewers: 29, hd: true },
+      { name: 'Adult Movies 01', type: 'vod', category: 'Adult', country: 'US', logoText: '18+', color: C.adult, epgNow: 'On Demand', epgNext: 'On Demand', currentViewers: 34, hd: true },
+      { name: 'Adult Movies 02', type: 'vod', category: 'Adult', country: 'EU', logoText: '18+', color: C.adult, epgNow: 'On Demand', epgNext: 'On Demand', currentViewers: 22, hd: true },
+      { name: 'Adult Movies 03', type: 'vod', category: 'Adult', country: 'US', logoText: '18+', color: C.adult, epgNow: 'On Demand', epgNext: 'On Demand', currentViewers: 18, hd: false },
+      { name: 'Adult Movies 04', type: 'vod', category: 'Adult', country: 'EU', logoText: '18+', color: C.adult, epgNow: 'On Demand', epgNext: 'On Demand', currentViewers: 14, hd: true },
     ],
   },
 ]

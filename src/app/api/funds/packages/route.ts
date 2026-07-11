@@ -28,6 +28,9 @@ export async function GET() {
         color: p.color,
         icon: p.icon,
         channelCount: p._count.channels,
+        advertisedCount: p.advertisedCount,
+        isAdult: p.isAdult,
+        pinProtected: p.pinProtected,
         totalViewers: agg._sum.currentViewers ?? 0,
         sortOrder: p.sortOrder,
       }

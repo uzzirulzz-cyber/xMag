@@ -108,17 +108,20 @@ model ContentCategory {
 
 // A content package / bouquet — a bundle of channels sold together.
 model Package {
-  id          String   @id @default(cuid())
-  name        String   // "Sports Pack", "Pakistani Channels", "English Movies"
-  type        String   // live | vod | series
-  description String?
-  color       String   // accent hex for the card
-  icon        String   // lucide icon name
-  channelCount Int     @default(0) // denormalized count of channels in this package
-  sortOrder   Int      @default(0)
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  channels    Channel[]
+  id              String   @id @default(cuid())
+  name            String   // "Sports Pack", "Pakistani Channels", "English Movies"
+  type            String   // live | vod | series
+  description     String?
+  color           String   // accent hex for the card
+  icon            String   // lucide icon name
+  channelCount    Int      @default(0) // denormalized count of channels in this package
+  advertisedCount Int      @default(0) // marketing total advertised to clients (e.g. 2500)
+  isAdult         Boolean  @default(false) // 18+ content — requires PIN
+  pinProtected   Boolean  @default(false) // blurred until PIN entered
+  sortOrder       Int      @default(0)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  channels        Channel[]
 }
 
 // A single streamable channel / VOD item / series with live viewership.
