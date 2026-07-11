@@ -26,6 +26,7 @@ model Reseller {
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]
   fundRequests FundRequest[]
+  subscriptions Subscription[]
 }
 
 // Supported funding channels: mobile wallets, bank transfer, crypto, card
@@ -83,7 +84,45 @@ model Transaction {
   reference     String?
   status        String       @default("completed") // pending | completed | failed
   fundRequestId String?      @unique
+  subscriptionId String?     @unique
   createdAt     DateTime     @default(now())
   reseller      Reseller     @relation(fields: [resellerId], references: [id], onDelete: Cascade)
   fundRequest   FundRequest? @relation(fields: [fundRequestId], references: [id])
+  subscription  Subscription? @relation(fields: [subscriptionId], references: [id])
+}
+
+// Catalogue of content categories a reseller can include/exclude per line.
+// Top-level types are live | vod | series; detailed rows are mostly series.
+model ContentCategory {
+  id        String   @id @default(cuid())
+  type      String   // live | vod | series
+  code      String   // language/region code, e.g. EN, IN, PK, AR
+  name      String   // human label, e.g. "ALL English Series"
+  itemCount Int      @default(0) // number of streams/items in the category
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// An IPTV line created by a reseller, spending credit from their balance.
+model Subscription {
+  id               String   @id @default(cuid())
+  resellerId       String
+  username         String   @unique
+  password         String
+  planMonths       Int      // 1 | 3 | 6 | 12
+  creditsCost      Float    // PKR debited from reseller balance
+  // Top-level content-type exclusions (checked = excluded for low-capacity devices)
+  excludedLive     Boolean  @default(false)
+  excludedVod      Boolean  @default(false)
+  excludedSeries   Boolean  @default(false)
+  // Selected detailed series categories (comma-separated ids; empty = all)
+  seriesCategoryIds String  @default("")
+  seriesCategoryCount Int   @default(0) // how many series categories selected (0 = all)
+  dns              String   @default("http://stariptv.pk:8080")
+  status           String   @default("active") // active | expired | disabled
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+  reseller         Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
+  transaction      Transaction?
 }

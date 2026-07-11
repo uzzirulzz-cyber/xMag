@@ -30,6 +30,10 @@ export async function ensureSeed() {
     await seedPaymentMethods()
   }
 
+  // Seed content-category catalogue for the Custom Subscription builder
+  const { ensureContentCategories } = await import('@/lib/subscriptions')
+  await ensureContentCategories()
+
   let reseller = await db.reseller.findFirst({
     where: { username: 'starreseller' },
   })
@@ -52,6 +56,11 @@ export async function ensureSeed() {
   const txnCount = await db.transaction.count({ where: { resellerId: reseller.id } })
   if (txnCount === 0) {
     await seedTransactions(reseller.id)
+  }
+
+  const subCount = await db.subscription.count({ where: { resellerId: reseller.id } })
+  if (subCount === 0) {
+    await seedSubscriptions(reseller.id)
   }
 
   return reseller
@@ -206,5 +215,63 @@ async function seedTransactions(resellerId: string) {
         status: 'pending',
       },
     })
+  }
+}
+
+// Seed a few active IPTV lines so the "My Subscriptions" list renders on first load.
+async function seedSubscriptions(resellerId: string) {
+  const now = new Date()
+  const addDays = (d: number) => new Date(now.getTime() + d * 24 * 60 * 60 * 1000)
+  const daysAgo = (d: number) => new Date(now.getTime() - d * 24 * 60 * 60 * 1000)
+
+  const seriesCats = await db.contentCategory.findMany({
+    where: { type: 'series' },
+    orderBy: { sortOrder: 'asc' },
+  })
+
+  const lines = [
+    {
+      username: 'axc_8f2k9p',
+      password: 'q7Hm2Lp9Zx',
+      planMonths: 12,
+      creditsCost: 3500,
+      excludedLive: false,
+      excludedVod: false,
+      excludedSeries: false,
+      seriesCategoryIds: '',
+      seriesCategoryCount: 0,
+      createdAt: daysAgo(12),
+      expiresAt: addDays(353),
+    },
+    {
+      username: 'axc_3m1r7t',
+      password: 'K4nW8vRe2a',
+      planMonths: 12,
+      creditsCost: 2100,
+      excludedLive: false,
+      excludedVod: true, // VOD excluded (low-capacity device)
+      excludedSeries: false,
+      seriesCategoryIds: seriesCats.slice(0, 3).map((c) => c.id).join(','),
+      seriesCategoryCount: 3,
+      createdAt: daysAgo(10),
+      expiresAt: addDays(355),
+    },
+    {
+      username: 'axc_9b4x2q',
+      password: 'Pw3Zt6Yn8c',
+      planMonths: 6,
+      creditsCost: 700,
+      excludedLive: true, // Live excluded (movies-only line)
+      excludedVod: false,
+      excludedSeries: false,
+      seriesCategoryIds: '',
+      seriesCategoryCount: 0,
+      createdAt: daysAgo(2),
+      expiresAt: addDays(178),
+    },
+  ]
+
+  for (const l of lines) {
+    await db.subscription.create({ data: { resellerId, ...l } })
   }
 }

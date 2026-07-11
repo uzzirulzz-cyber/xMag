@@ -1,0 +1,1641 @@
+     1→( () => {
+     2→    var t = {
+     3→        173: function(t, e) {
+     4→            !function(t) {
+     5→                "use strict";
+     6→                class e {
+     7→                    t;
+     8→                    o = 0;
+     9→                    i = [];
+    10→                    u(t) {
+    11→                        if (t.hadRecentInput)
+    12→                            return;
+    13→                        const e = this.i[0]
+    14→                          , n = this.i.at(-1);
+    15→                        this.o && e && n && t.startTime - n.startTime < 1e3 && t.startTime - e.startTime < 5e3 ? (this.o += t.value,
+    16→                        this.i.push(t)) : (this.o = t.value,
+    17→                        this.i = [t]),
+    18→                        this.t?.(t)
+    19→                    }
+    20→                }
+    21→                const n = () => {
+    22→                    const t = performance.getEntriesByType("navigation")[0];
+    23→                    if (t && t.responseStart > 0 && t.responseStart < performance.now())
+    24→                        return t
+    25→                }
+    26→                  , r = t => {
+    27→                    if ("loading" === document.readyState)
+    28→                        return "loading";
+    29→                    const e = n();
+    30→                    if (e) {
+    31→                        if (t < e.domInteractive)
+    32→                            return "loading";
+    33→                        if (0 === e.domContentLoadedEventStart || t < e.domContentLoadedEventStart)
+    34→                            return "dom-interactive";
+    35→                        if (0 === e.domComplete || t < e.domComplete)
+    36→                            return "dom-content-loaded"
+    37→                    }
+    38→                    return "complete"
+    39→                }
+    40→                  , i = t => {
+    41→                    const e = t.nodeName;
+    42→                    return 1 === t.nodeType ? e.toLowerCase() : e.toUpperCase().replace(/^#/, "")
+    43→                }
+    44→                  , o = t => {
+    45→                    let e = "";
+    46→                    try {
+    47→                        for (; 9 !== t?.nodeType; ) {
+    48→                            const n = t
+    49→                              , r = n.id ? "#" + n.id : [i(n), ...Array.from(n.classList).sort()].join(".");
+    50→                            if (e.length + r.length > 99)
+    51→                                return e || r;
+    52→                            if (e = e ? r + ">" + e : r,
+    53→                            n.id)
+    54→                                break;
+    55→                            t = n.parentNode
+    56→                        }
+    57→                    } catch {}
+    58→                    return e
+    59→                }
+    60→                  , s = new WeakMap;
+    61→                function a(t, e) {
+    62→                    let n = s.get(e);
+    63→                    return n || (n = new WeakMap,
+    64→                    s.set(e, n)),
+    65→                    n.get(t) || n.set(t, new e),
+    66→                    n.get(t)
+    67→                }
+    68→                let c = -1;
+    69→                const l = () => c
+    70→                  , u = t => {
+    71→                    addEventListener("pageshow", e => {
+    72→                        e.persisted && (c = e.timeStamp,
+    73→                        t(e))
+    74→                    }
+    75→                    , !0)
+    76→                }
+    77→                  , d = (t, e, n, r) => {
+    78→                    let i, o;
+    79→                    return s => {
+    80→                        e.value >= 0 && (s || r) && (o = e.value - (i ?? 0),
+    81→                        (o || void 0 === i) && (i = e.value,
+    82→                        e.delta = o,
+    83→                        e.rating = ( (t, e) => t > e[1] ? "poor" : t > e[0] ? "needs-improvement" : "good")(e.value, n),
+    84→                        t(e)))
+    85→                    }
+    86→                }
+    87→                  , f = t => {
+    88→                    requestAnimationFrame( () => requestAnimationFrame(t))
+    89→                }
+    90→                  , p = () => n()?.activationStart ?? 0
+    91→                  , g = (t, e=-1) => {
+    92→                    const r = n();
+    93→                    let i = "navigate";
+    94→                    return l() >= 0 ? i = "back-forward-cache" : r && (document.prerendering || p() > 0 ? i = "prerender" : document.wasDiscarded ? i = "restore" : r.type && (i = r.type.replace(/_/g, "-"))),
+    95→                    {
+    96→                        name: t,
+    97→                        value: e,
+    98→                        rating: "good",
+    99→                        delta: 0,
+   100→                        entries: [],
+   101→                        id: `v5-${Date.now()}-${Math.floor(8999999999999 * Math.random()) + 1e12}`,
+   102→                        navigationType: i
+   103→                    }
+   104→                }
+   105→                  , m = (t, e, n={}) => {
+   106→                    try {
+   107→                        if (PerformanceObserver.supportedEntryTypes.includes(t)) {
+   108→                            const r = new PerformanceObserver(t => {
+   109→                                queueMicrotask( () => {
+   110→                                    e(t.getEntries())
+   111→                                }
+   112→                                )
+   113→                            }
+   114→                            );
+   115→                            return r.observe({
+   116→                                type: t,
+   117→                                buffered: !0,
+   118→                                ...n
+   119→                            }),
+   120→                            r
+   121→                        }
+   122→                    } catch {}
+   123→                }
+   124→                  , v = t => {
+   125→                    let e = !1;
+   126→                    return () => {
+   127→                        e || (t(),
+   128→                        e = !0)
+   129→                    }
+   130→                }
+   131→                ;
+   132→                let h = -1;
+   133→                const y = new Set
+   134→                  , T = () => "hidden" !== document.visibilityState || document.prerendering ? 1 / 0 : 0
+   135→                  , w = t => {
+   136→                    if ("hidden" === document.visibilityState) {
+   137→                        if ("visibilitychange" === t.type)
+   138→                            for (const t of y)
+   139→                                t();
+   140→                        isFinite(h) || (h = "visibilitychange" === t.type ? t.timeStamp : 0,
+   141→                        removeEventListener("prerenderingchange", w, !0))
+   142→                    }
+   143→                }
+   144→                  , b = () => {
+   145→                    if (h < 0) {
+   146→                        const t = p()
+   147→                          , e = document.prerendering ? void 0 : globalThis.performance.getEntriesByType("visibility-state").find(e => "hidden" === e.name && e.startTime >= t)?.startTime;
+   148→                        h = e ?? T(),
+   149→                        addEventListener("visibilitychange", w, !0),
+   150→                        addEventListener("prerenderingchange", w, !0),
+   151→                        u( () => {
+   152→                            setTimeout( () => {
+   153→                                h = T()
+   154→                            }
+   155→                            )
+   156→                        }
+   157→                        )
+   158→                    }
+   159→                    return {
+   160→                        get firstHiddenTime() {
+   161→                            return h
+   162→                        },
+   163→                        onHidden(t) {
+   164→                            y.add(t)
+   165→                        }
+   166→                    }
+   167→                }
+   168→                  , S = t => {
+   169→                    document.prerendering ? addEventListener("prerenderingchange", t, !0) : t()
+   170→                }
+   171→                  , E = [1800, 3e3]
+   172→                  , L = (t, e={}) => {
+   173→                    S( () => {
+   174→                        const n = b();
+   175→                        let r, i = g("FCP");
+   176→                        const o = m("paint", t => {
+   177→                            for (const e of t)
+   178→                                "first-contentful-paint" === e.name && (o.disconnect(),
+   179→                                e.startTime < n.firstHiddenTime && (i.value = Math.max(e.startTime - p(), 0),
+   180→                                i.entries.push(e),
+   181→                                r(!0)))
+   182→                        }
+   183→                        );
+   184→                        o && (r = d(t, i, E, e.reportAllChanges),
+   185→                        u(n => {
+   186→                            i = g("FCP"),
+   187→                            r = d(t, i, E, e.reportAllChanges),
+   188→                            f( () => {
+   189→                                i.value = performance.now() - n.timeStamp,
+   190→                                r(!0)
+   191→                            }
+   192→                            )
+   193→                        }
+   194→                        ))
+   195→                    }
+   196→                    )
+   197→                }
+   198→                  , D = [.1, .25]
+   199→                  , A = t => t.find(t => 1 === t.node?.nodeType) || t[0];
+   200→                let P = 0
+   201→                  , C = 1 / 0
+   202→                  , U = 0;
+   203→                const I = t => {
+   204→                    for (const e of t)
+   205→                        e.interactionId && (C = Math.min(C, e.interactionId),
+   206→                        U = Math.max(U, e.interactionId),
+   207→                        P = U ? (U - C) / 7 + 1 : 0)
+   208→                }
+   209→                ;
+   210→                let M;
+   211→                const O = () => M ? P : performance.interactionCount ?? 0;
+   212→                let k = 0;
+   213→                class R {
+   214→                    l = [];
+   215→                    h = new Map;
+   216→                    p;
+   217→                    m;
+   218→                    v() {
+   219→                        k = O(),
+   220→                        this.l.length = 0,
+   221→                        this.h.clear()
+   222→                    }
+   223→                    M() {
+   224→                        const t = Math.min(this.l.length - 1, Math.floor((O() - k) / 50));
+   225→                        return this.l[t]
+   226→                    }
+   227→                    u(t) {
+   228→                        if (this.p?.(t),
+   229→                        !t.interactionId && "first-input" !== t.entryType)
+   230→                            return;
+   231→                        const e = this.l.at(-1);
+   232→                        let n = this.h.get(t.interactionId);
+   233→                        if (n || this.l.length < 10 || t.duration > e.T) {
+   234→                            if (n ? t.duration > n.T ? (n.entries = [t],
+   235→                            n.T = t.duration) : t.duration === n.T && t.startTime === n.entries[0].startTime && n.entries.push(t) : (n = {
+   236→                                id: t.interactionId,
+   237→                                entries: [t],
+   238→                                T: t.duration
+   239→                            },
+   240→                            this.h.set(n.id, n),
+   241→                            this.l.push(n)),
+   242→                            this.l.sort( (t, e) => e.T - t.T),
+   243→                            this.l.length > 10) {
+   244→                                const t = this.l.splice(10);
+   245→                                for (const e of t)
+   246→                                    this.h.delete(e.id)
+   247→                            }
+   248→                            this.m?.(n)
+   249→                        }
+   250→                    }
+   251→                }
+   252→                const B = t => {
+   253→                    const e = globalThis.requestIdleCallback || setTimeout
+   254→                      , n = globalThis.cancelIdleCallback || clearTimeout;
+   255→                    if ("hidden" === document.visibilityState)
+   256→                        t();
+   257→                    else {
+   258→                        const r = v(t);
+   259→                        let i = -1;
+   260→                        const o = () => {
+   261→                            n(i),
+   262→                            r()
+   263→                        }
+   264→                        ;
+   265→                        addEventListener("visibilitychange", o, {
+   266→                            once: !0,
+   267→                            capture: !0
+   268→                        }),
+   269→                        i = e( () => {
+   270→                            removeEventListener("visibilitychange", o, {
+   271→                                capture: !0
+   272→                            }),
+   273→                            r()
+   274→                        }
+   275→                        )
+   276→                    }
+   277→                }
+   278→                  , j = [200, 500];
+   279→                class _ {
+   280→                    p;
+   281→                    u(t) {
+   282→                        this.p?.(t)
+   283→                    }
+   284→                }
+   285→                const x = [2500, 4e3]
+   286→                  , F = [800, 1800]
+   287→                  , q = t => {
+   288→                    document.prerendering ? S( () => q(t)) : "complete" !== document.readyState ? addEventListener("load", () => q(t), !0) : setTimeout(t)
+   289→                }
+   290→                ;
+   291→                t.CLSThresholds = D,
+   292→                t.FCPThresholds = E,
+   293→                t.INPThresholds = j,
+   294→                t.LCPThresholds = x,
+   295→                t.TTFBThresholds = F,
+   296→                t.onCLS = (t, n={}) => {
+   297→                    const i = a(n = Object.assign({}, n), e)
+   298→                      , s = new WeakMap;
+   299→                    i.t = t => {
+   300→                        if (t?.sources?.length) {
+   301→                            const e = A(t.sources)
+   302→                              , r = e?.node;
+   303→                            if (r) {
+   304→                                const t = n.generateTarget?.(r) ?? o(r);
+   305→                                s.set(e, t)
+   306→                            }
+   307→                        }
+   308→                    }
+   309→                    ,
+   310→                    ( (t, n={}) => {
+   311→                        const r = b();
+   312→                        L(v( () => {
+   313→                            let i, o = g("CLS", 0);
+   314→                            const s = a(n, e)
+   315→                              , c = t => {
+   316→                                for (const e of t)
+   317→                                    s.u(e);
+   318→                                s.o > o.value && (o.value = s.o,
+   319→                                o.entries = s.i,
+   320→                                i())
+   321→                            }
+   322→                              , l = m("layout-shift", c);
+   323→                            l && (i = d(t, o, D, n.reportAllChanges),
+   324→                            r.onHidden( () => {
+   325→                                c(l.takeRecords()),
+   326→                                i(!0)
+   327→                            }
+   328→                            ),
+   329→                            u( () => {
+   330→                                s.o = 0,
+   331→                                o = g("CLS", 0),
+   332→                                i = d(t, o, D, n.reportAllChanges),
+   333→                                f(i)
+   334→                            }
+   335→                            ),
+   336→                            setTimeout(i))
+   337→                        }
+   338→                        ))
+   339→                    }
+   340→                    )(e => {
+   341→                        t((t => {
+   342→                            let e = {};
+   343→                            if (t.entries.length) {
+   344→                                const n = t.entries.reduce( (t, e) => t.value > e.value ? t : e);
+   345→                                if (n?.sources?.length) {
+   346→                                    const t = A(n.sources);
+   347→                                    t && (e = {
+   348→                                        largestShiftTarget: s.get(t),
+   349→                                        largestShiftTime: n.startTime,
+   350→                                        largestShiftValue: n.value,
+   351→                                        largestShiftSource: t,
+   352→                                        largestShiftEntry: n,
+   353→                                        loadState: r(n.startTime)
+   354→                                    })
+   355→                                }
+   356→                            }
+   357→                            return Object.assign(t, {
+   358→                                attribution: e
+   359→                            })
+   360→                        }
+   361→                        )(e))
+   362→                    }
+   363→                    , n)
+   364→                }
+   365→                ,
+   366→                t.onFCP = (t, e={}) => {
+   367→                    L(e => {
+   368→                        t((t => {
+   369→                            let e = {
+   370→                                timeToFirstByte: 0,
+   371→                                firstByteToFCP: t.value,
+   372→                                loadState: r(l())
+   373→                            };
+   374→                            if (t.entries.length) {
+   375→                                const i = n()
+   376→                                  , o = t.entries.at(-1);
+   377→                                if (i) {
+   378→                                    const n = i.activationStart || 0
+   379→                                      , s = Math.max(0, i.responseStart - n);
+   380→                                    e = {
+   381→                                        timeToFirstByte: s,
+   382→                                        firstByteToFCP: t.value - s,
+   383→                                        loadState: r(t.entries[0].startTime),
+   384→                                        navigationEntry: i,
+   385→                                        fcpEntry: o
+   386→                                    }
+   387→                                }
+   388→                            }
+   389→                            return Object.assign(t, {
+   390→                                attribution: e
+   391→                            })
+   392→                        }
+   393→                        )(e))
+   394→                    }
+   395→                    , e)
+   396→                }
+   397→                ,
+   398→                t.onINP = (t, e={}) => {
+   399→                    const n = a(e = Object.assign({}, e), R);
+   400→                    let i = []
+   401→                      , s = []
+   402→                      , c = 0;
+   403→                    const l = new WeakMap
+   404→                      , f = new WeakMap;
+   405→                    let p = !1;
+   406→                    const v = () => {
+   407→                        p || (B(h),
+   408→                        p = !0)
+   409→                    }
+   410→                      , h = () => {
+   411→                        const t = new Set(n.l.map(t => l.get(t.entries[0])))
+   412→                          , e = s.length - 10;
+   413→                        s = s.filter( (n, r) => r >= e || t.has(n));
+   414→                        const r = new Set;
+   415→                        for (const t of s) {
+   416→                            const e = y(t.startTime, t.processingEnd);
+   417→                            for (const t of e)
+   418→                                r.add(t)
+   419→                        }
+   420→                        i = i.filter(t => t.startTime > c || r.has(t)),
+   421→                        p = !1
+   422→                    }
+   423→                    ;
+   424→                    n.p = t => {
+   425→                        const n = t.startTime + t.duration;
+   426→                        let r;
+   427→                        c = Math.max(c, t.processingEnd);
+   428→                        for (let i = s.length - 1; i >= 0; i--) {
+   429→                            const o = s[i];
+   430→                            if (Math.abs(n - o.renderTime) <= 8) {
+   431→                                r = o,
+   432→                                r.startTime = Math.min(t.startTime, r.startTime),
+   433→                                r.processingStart = Math.min(t.processingStart, r.processingStart),
+   434→                                r.processingEnd = Math.max(t.processingEnd, r.processingEnd),
+   435→                                !1 !== e.includeProcessedEventEntries && r.entries.push(t);
+   436→                                break
+   437→                            }
+   438→                        }
+   439→                        r || (r = {
+   440→                            startTime: t.startTime,
+   441→                            processingStart: t.processingStart,
+   442→                            processingEnd: t.processingEnd,
+   443→                            renderTime: n,
+   444→                            entries: !1 !== e.includeProcessedEventEntries ? [t] : []
+   445→                        },
+   446→                        s.push(r)),
+   447→                        (t.interactionId || "first-input" === t.entryType) && l.set(t, r),
+   448→                        v()
+   449→                    }
+   450→                    ,
+   451→                    n.m = t => {
+   452→                        if (!f.get(t)) {
+   453→                            const n = t.entries.find(t => t.target)?.target;
+   454→                            if (n) {
+   455→                                const r = e.generateTarget?.(n) ?? o(n);
+   456→                                f.set(t, r)
+   457→                            } else {
+   458→                                const e = t.entries.find(t => t.targetSelector)?.targetSelector;
+   459→                                e && f.set(t, e)
+   460→                            }
+   461→                        }
+   462→                    }
+   463→                    ;
+   464→                    const y = (t, e) => {
+   465→                        const n = [];
+   466→                        for (const r of i)
+   467→                            if (!(r.startTime + r.duration < t)) {
+   468→                                if (r.startTime > e)
+   469→                                    break;
+   470→                                n.push(r)
+   471→                            }
+   472→                        return n
+   473→                    }
+   474→                    ;
+   475→                    m("long-animation-frame", t => {
+   476→                        i = i.concat(t),
+   477→                        v()
+   478→                    }
+   479→                    ),
+   480→                    ( (t, e={}) => {
+   481→                        if (!globalThis.PerformanceEventTiming || !("interactionId"in PerformanceEventTiming.prototype))
+   482→                            return;
+   483→                        const n = b();
+   484→                        S( () => {
+   485→                            "interactionCount"in performance || M || (M = m("event", I, {
+   486→                                durationThreshold: 0
+   487→                            }));
+   488→                            let r, i = g("INP");
+   489→                            const o = a(e, R)
+   490→                              , s = t => {
+   491→                                B( () => {
+   492→                                    for (const e of t)
+   493→                                        o.u(e);
+   494→                                    const e = o.M();
+   495→                                    e && e.T !== i.value && (i.value = e.T,
+   496→                                    i.entries = e.entries,
+   497→                                    r())
+   498→                                }
+   499→                                )
+   500→                            }
+   501→                              , c = m("event", s, {
+   502→                                durationThreshold: e.durationThreshold ?? 40
+   503→                            });
+   504→                            r = d(t, i, j, e.reportAllChanges),
+   505→                            c && (c.observe({
+   506→                                type: "first-input",
+   507→                                buffered: !0
+   508→                            }),
+   509→                            n.onHidden( () => {
+   510→                                s(c.takeRecords()),
+   511→                                r(!0)
+   512→                            }
+   513→                            ),
+   514→                            u( () => {
+   515→                                o.v(),
+   516→                                i = g("INP"),
+   517→                                r = d(t, i, j, e.reportAllChanges)
+   518→                            }
+   519→                            ))
+   520→                        }
+   521→                        )
+   522→                    }
+   523→                    )(e => {
+   524→                        t((t => {
+   525→                            const e = t.entries[0]
+   526→                              , i = l.get(e)
+   527→                              , o = e.processingStart
+   528→                              , s = Math.max(e.startTime + e.duration, o)
+   529→                              , a = Math.min(i.processingEnd, s)
+   530→                              , c = i.entries.sort( (t, e) => t.processingStart - e.processingStart)
+   531→                              , u = y(e.startTime, a)
+   532→                              , d = n.h.get(e.interactionId)
+   533→                              , p = {
+   534→                                interactionTarget: f.get(d),
+   535→                                interactionType: e.name.startsWith("key") ? "keyboard" : "pointer",
+   536→                                interactionTime: e.startTime,
+   537→                                nextPaintTime: s,
+   538→                                processedEventEntries: c,
+   539→                                longAnimationFrameEntries: u,
+   540→                                inputDelay: o - e.startTime,
+   541→                                processingDuration: a - o,
+   542→                                presentationDelay: s - a,
+   543→                                loadState: r(e.startTime),
+   544→                                longestScript: void 0,
+   545→                                totalScriptDuration: void 0,
+   546→                                totalStyleAndLayoutDuration: void 0,
+   547→                                totalPaintDuration: void 0,
+   548→                                totalUnattributedDuration: void 0
+   549→                            };
+   550→                            return (t => {
+   551→                                if (!t.longAnimationFrameEntries?.length)
+   552→                                    return;
+   553→                                const e = t.interactionTime
+   554→                                  , n = t.inputDelay
+   555→                                  , r = t.processingDuration;
+   556→                                let i, o, s = 0, a = 0, c = 0, l = 0;
+   557→                                for (const c of t.longAnimationFrameEntries) {
+   558→                                    a = a + c.startTime + c.duration - c.styleAndLayoutStart;
+   559→                                    for (const t of c.scripts) {
+   560→                                        const c = t.startTime + t.duration;
+   561→                                        if (c < e)
+   562→                                            continue;
+   563→                                        const u = c - Math.max(e, t.startTime)
+   564→                                          , d = t.duration ? u / t.duration * t.forcedStyleAndLayoutDuration : 0;
+   565→                                        s += u - d,
+   566→                                        a += d,
+   567→                                        u > l && (o = t.startTime < e + n ? "input-delay" : t.startTime >= e + n + r ? "presentation-delay" : "processing-duration",
+   568→                                        i = t,
+   569→                                        l = u)
+   570→                                    }
+   571→                                }
+   572→                                const u = t.longAnimationFrameEntries.at(-1)
+   573→                                  , d = u ? u.startTime + u.duration : 0;
+   574→                                d >= e + n + r && (c = t.nextPaintTime - d),
+   575→                                i && o && (t.longestScript = {
+   576→                                    entry: i,
+   577→                                    subpart: o,
+   578→                                    intersectingDuration: l
+   579→                                }),
+   580→                                t.totalScriptDuration = s,
+   581→                                t.totalStyleAndLayoutDuration = a,
+   582→                                t.totalPaintDuration = c,
+   583→                                t.totalUnattributedDuration = t.nextPaintTime - e - s - a - c
+   584→                            }
+   585→                            )(p),
+   586→                            Object.assign(t, {
+   587→                                attribution: p
+   588→                            })
+   589→                        }
+   590→                        )(e))
+   591→                    }
+   592→                    , e)
+   593→                }
+   594→                ,
+   595→                t.onLCP = (t, e={}) => {
+   596→                    const r = a(e = Object.assign({}, e), _)
+   597→                      , i = new WeakMap;
+   598→                    r.p = t => {
+   599→                        const n = t.element;
+   600→                        if (n) {
+   601→                            const r = e.generateTarget?.(n) ?? o(n);
+   602→                            i.set(t, r)
+   603→                        } else
+   604→                            t.id && i.set(t, `#${t.id}`)
+   605→                    }
+   606→                    ,
+   607→                    ( (t, e={}) => {
+   608→                        S( () => {
+   609→                            const n = b();
+   610→                            let r, i = g("LCP");
+   611→                            const o = a(e, _)
+   612→                              , s = t => {
+   613→                                e.reportAllChanges || (t = t.slice(-1));
+   614→                                for (const e of t)
+   615→                                    o.u(e),
+   616→                                    e.startTime < n.firstHiddenTime && (i.value = Math.max(e.startTime - p(), 0),
+   617→                                    i.entries = [e],
+   618→                                    r())
+   619→                            }
+   620→                              , c = m("largest-contentful-paint", s);
+   621→                            if (c) {
+   622→                                r = d(t, i, x, e.reportAllChanges);
+   623→                                const n = v( () => {
+   624→                                    s(c.takeRecords()),
+   625→                                    c.disconnect(),
+   626→                                    r(!0)
+   627→                                }
+   628→                                )
+   629→                                  , o = t => {
+   630→                                    t.isTrusted && (B(n),
+   631→                                    removeEventListener(t.type, o, {
+   632→                                        capture: !0
+   633→                                    }))
+   634→                                }
+   635→                                ;
+   636→                                for (const t of ["keydown", "click", "visibilitychange"])
+   637→                                    addEventListener(t, o, {
+   638→                                        capture: !0
+   639→                                    });
+   640→                                u(n => {
+   641→                                    i = g("LCP"),
+   642→                                    r = d(t, i, x, e.reportAllChanges),
+   643→                                    f( () => {
+   644→                                        i.value = performance.now() - n.timeStamp,
+   645→                                        r(!0)
+   646→                                    }
+   647→                                    )
+   648→                                }
+   649→                                )
+   650→                            }
+   651→                        }
+   652→                        )
+   653→                    }
+   654→                    )(e => {
+   655→                        t((t => {
+   656→                            let e = {
+   657→                                timeToFirstByte: 0,
+   658→                                resourceLoadDelay: 0,
+   659→                                resourceLoadDuration: 0,
+   660→                                elementRenderDelay: t.value
+   661→                            };
+   662→                            if (t.entries.length) {
+   663→                                const r = t.entries.at(-1)
+   664→                                  , o = r.url && performance.getEntriesByType("resource").find(t => t.name === r.url);
+   665→                                e.target = i.get(r),
+   666→                                e.lcpEntry = r,
+   667→                                r.url && (e.url = r.url),
+   668→                                o && (e.lcpResourceEntry = o);
+   669→                                const s = n();
+   670→                                if (s) {
+   671→                                    const n = s.activationStart || 0
+   672→                                      , r = Math.max(0, s.responseStart - n)
+   673→                                      , i = Math.max(r, o ? (o.requestStart || o.startTime) - n : 0)
+   674→                                      , a = Math.min(t.value, Math.max(i, o ? o.responseEnd - n : 0));
+   675→                                    e = {
+   676→                                        ...e,
+   677→                                        timeToFirstByte: r,
+   678→                                        resourceLoadDelay: i - r,
+   679→                                        resourceLoadDuration: a - i,
+   680→                                        elementRenderDelay: t.value - a,
+   681→                                        navigationEntry: s
+   682→                                    }
+   683→                                }
+   684→                            }
+   685→                            return Object.assign(t, {
+   686→                                attribution: e
+   687→                            })
+   688→                        }
+   689→                        )(e))
+   690→                    }
+   691→                    , e)
+   692→                }
+   693→                ,
+   694→                t.onTTFB = (t, e={}) => {
+   695→                    ( (t, e={}) => {
+   696→                        let r = g("TTFB")
+   697→                          , i = d(t, r, F, e.reportAllChanges);
+   698→                        q( () => {
+   699→                            const o = n();
+   700→                            o && (r.value = Math.max(o.responseStart - p(), 0),
+   701→                            r.entries = [o],
+   702→                            i(!0),
+   703→                            u( () => {
+   704→                                r = g("TTFB", 0),
+   705→                                i = d(t, r, F, e.reportAllChanges),
+   706→                                i(!0)
+   707→                            }
+   708→                            ))
+   709→                        }
+   710→                        )
+   711→                    }
+   712→                    )(e => {
+   713→                        t((t => {
+   714→                            let e = {
+   715→                                waitingDuration: 0,
+   716→                                cacheDuration: 0,
+   717→                                dnsDuration: 0,
+   718→                                connectionDuration: 0,
+   719→                                requestDuration: 0
+   720→                            };
+   721→                            if (t.entries.length) {
+   722→                                const n = t.entries[0]
+   723→                                  , r = n.activationStart || 0
+   724→                                  , i = Math.max((n.workerStart || n.fetchStart) - r, 0)
+   725→                                  , o = Math.max(n.domainLookupStart - r, 0)
+   726→                                  , s = Math.max(n.connectStart - r, 0)
+   727→                                  , a = Math.max(n.connectEnd - r, 0);
+   728→                                e = {
+   729→                                    waitingDuration: i,
+   730→                                    cacheDuration: o - i,
+   731→                                    dnsDuration: s - o,
+   732→                                    connectionDuration: a - s,
+   733→                                    requestDuration: t.value - a,
+   734→                                    navigationEntry: n
+   735→                                }
+   736→                            }
+   737→                            return Object.assign(t, {
+   738→                                attribution: e
+   739→                            })
+   740→                        }
+   741→                        )(e))
+   742→                    }
+   743→                    , e)
+   744→                }
+   745→            }(e)
+   746→        },
+   747→        323: (t, e) => {
+   748→            "use strict";
+   749→            Object.defineProperty(e, "__esModule", {
+   750→                value: !0
+   751→            }),
+   752→            e.sendObjectBeacon = function(t, e, n, r=!1, i=null) {
+   753→                let o = i || `/cdn-cgi/rum?${t}`
+   754→                  , s = !0;
+   755→                if (navigator && "string" == typeof navigator.userAgent)
+   756→                    try {
+   757→                        const t = navigator.userAgent.match(/Chrome\/([0-9]+)/);
+   758→                        t && t[0].toLowerCase().indexOf("chrome") > -1 && parseInt(t[1]) < 81 && (s = !1)
+   759→                    } catch (t) {}
+   760→                if (navigator && "function" == typeof navigator.sendBeacon && s && r) {
+   761→                    e.st = 1;
+   762→                    const t = JSON.stringify(e)
+   763→                      , n = {
+   764→                        type: "application/json"
+   765→                    }
+   766→                      , r = navigator.sendBeacon && navigator.sendBeacon.bind(navigator);
+   767→                    null == r || r(o, new Blob([t],n))
+   768→                } else {
+   769→                    e.st = 2;
+   770→                    const t = JSON.stringify(e)
+   771→                      , r = new XMLHttpRequest;
+   772→                    n && (r.onreadystatechange = function() {
+   773→                        4 == this.readyState && 204 == this.status && n()
+   774→                    }
+   775→                    ),
+   776→                    r.open("POST", o, !0),
+   777→                    r.setRequestHeader("content-type", "application/json"),
+   778→                    r.send(t)
+   779→                }
+   780→            }
+   781→        }
+   782→        ,
+   783→        674: (t, e) => {
+   784→            "use strict";
+   785→            Object.defineProperty(e, "__esModule", {
+   786→                value: !0
+   787→            }),
+   788→            e.timingsV2TargetKeys = e.timingsTargetKeys = void 0,
+   789→            e.buildTimingsObject = function(t, e, n) {
+   790→                for (const r of n) {
+   791→                    const n = t[r];
+   792→                    void 0 !== e && ("number" != typeof n && "string" != typeof n || (e[r] = n))
+   793→                }
+   794→            }
+   795→            ,
+   796→            e.timingsTargetKeys = ["navigationStart", "domainLookupStart", "domainLookupEnd", "connectStart", "connectEnd", "requestStart", "responseStart", "responseEnd", "domLoading", "domComplete", "loadEventStart", "loadEventEnd"],
+   797→            e.timingsV2TargetKeys = ["nextHopProtocol", "domainLookupStart", "domainLookupEnd", "connectStart", "connectEnd", "requestStart", "responseStart", "responseEnd", "domInteractive", "domComplete", "loadEventStart", "loadEventEnd", "finalResponseHeadersStart", "firstInterimResponseStart", "transferSize", "decodedBodySize"]
+   798→        }
+   799→        ,
+   800→        696: (t, e) => {
+   801→            "use strict";
+   802→            var n, r;
+   803→            Object.defineProperty(e, "__esModule", {
+   804→                value: !0
+   805→            }),
+   806→            e.FetchPriority = e.EventType = void 0,
+   807→            function(t) {
+   808→                t[t.Load = 1] = "Load",
+   809→                t[t.Additional = 2] = "Additional",
+   810→                t[t.WebVitalsV2 = 3] = "WebVitalsV2"
+   811→            }(n || (e.EventType = n = {})),
+   812→            function(t) {
+   813→                t.High = "high",
+   814→                t.Low = "low",
+   815→                t.Auto = "auto"
+   816→            }(r || (e.FetchPriority = r = {}))
+   817→        }
+   818→        ,
+   819→        791: (t, e, n) => {
+   820→            "use strict";
+   821→            n.r(e),
+   822→            n.d(e, {
+   823→                MAX: () => r,
+   824→                NIL: () => i,
+   825→                parse: () => a,
+   826→                stringify: () => u,
+   827→                v1: () => v,
+   828→                v1ToV6: () => h,
+   829→                v3: () => I,
+   830→                v4: () => O,
+   831→                v5: () => _,
+   832→                v6: () => x,
+   833→                v6ToV1: () => F,
+   834→                v7: () => V,
+   835→                validate: () => s,
+   836→                version: () => $
+   837→            });
+   838→            const r = "ffffffff-ffff-ffff-ffff-ffffffffffff"
+   839→              , i = "00000000-0000-0000-0000-000000000000"
+   840→              , o = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/i
+   841→              , s = function(t) {
+   842→                return "string" == typeof t && o.test(t)
+   843→            }
+   844→              , a = function(t) {
+   845→                if (!s(t))
+   846→                    throw TypeError("Invalid UUID");
+   847→                let e;
+   848→                return Uint8Array.of((e = parseInt(t.slice(0, 8), 16)) >>> 24, e >>> 16 & 255, e >>> 8 & 255, 255 & e, (e = parseInt(t.slice(9, 13), 16)) >>> 8, 255 & e, (e = parseInt(t.slice(14, 18), 16)) >>> 8, 255 & e, (e = parseInt(t.slice(19, 23), 16)) >>> 8, 255 & e, (e = parseInt(t.slice(24, 36), 16)) / 1099511627776 & 255, e / 4294967296 & 255, e >>> 24 & 255, e >>> 16 & 255, e >>> 8 & 255, 255 & e)
+   849→            }
+   850→              , c = [];
+   851→            for (let t = 0; t < 256; ++t)
+   852→                c.push((t + 256).toString(16).slice(1));
+   853→            function l(t, e=0) {
+   854→                return (c[t[e + 0]] + c[t[e + 1]] + c[t[e + 2]] + c[t[e + 3]] + "-" + c[t[e + 4]] + c[t[e + 5]] + "-" + c[t[e + 6]] + c[t[e + 7]] + "-" + c[t[e + 8]] + c[t[e + 9]] + "-" + c[t[e + 10]] + c[t[e + 11]] + c[t[e + 12]] + c[t[e + 13]] + c[t[e + 14]] + c[t[e + 15]]).toLowerCase()
+   855→            }
+   856→            const u = function(t, e=0) {
+   857→                const n = l(t, e);
+   858→                if (!s(n))
+   859→                    throw TypeError("Stringified UUID is invalid");
+   860→                return n
+   861→            };
+   862→            let d;
+   863→            const f = new Uint8Array(16);
+   864→            function p() {
+   865→                if (!d) {
+   866→                    if ("undefined" == typeof crypto || !crypto.getRandomValues)
+   867→                        throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
+   868→                    d = crypto.getRandomValues.bind(crypto)
+   869→                }
+   870→                return d(f)
+   871→            }
+   872→            const g = {};
+   873→            function m(t, e, n, r, i, o, s=0) {
+   874→                if (t.length < 16)
+   875→                    throw new Error("Random bytes length must be >= 16");
+   876→                if (o) {
+   877→                    if (s < 0 || s + 16 > o.length)
+   878→                        throw new RangeError(`UUID byte range ${s}:${s + 15} is out of buffer bounds`)
+   879→                } else
+   880→                    o = new Uint8Array(16),
+   881→                    s = 0;
+   882→                null != e || (e = Date.now()),
+   883→                null != n || (n = 0),
+   884→                null != r || (r = 16383 & (t[8] << 8 | t[9])),
+   885→                null != i || (i = t.slice(10, 16));
+   886→                const a = (1e4 * (268435455 & (e += 122192928e5)) + n) % 4294967296;
+   887→                o[s++] = a >>> 24 & 255,
+   888→                o[s++] = a >>> 16 & 255,
+   889→                o[s++] = a >>> 8 & 255,
+   890→                o[s++] = 255 & a;
+   891→                const c = e / 4294967296 * 1e4 & 268435455;
+   892→                o[s++] = c >>> 8 & 255,
+   893→                o[s++] = 255 & c,
+   894→                o[s++] = c >>> 24 & 15 | 16,
+   895→                o[s++] = c >>> 16 & 255,
+   896→                o[s++] = r >>> 8 | 128,
+   897→                o[s++] = 255 & r;
+   898→                for (let t = 0; t < 6; ++t)
+   899→                    o[s++] = i[t];
+   900→                return o
+   901→            }
+   902→            const v = function(t, e, n) {
+   903→                var r, i, o, s;
+   904→                let a;
+   905→                const c = null !== (r = null == t ? void 0 : t._v6) && void 0 !== r && r;
+   906→                if (t) {
+   907→                    const e = Object.keys(t);
+   908→                    1 === e.length && "_v6" === e[0] && (t = void 0)
+   909→                }
+   910→                if (t)
+   911→                    a = m(null !== (s = null !== (i = t.random) && void 0 !== i ? i : null === (o = t.rng) || void 0 === o ? void 0 : o.call(t)) && void 0 !== s ? s : p(), t.msecs, t.nsecs, t.clockseq, t.node, e, n);
+   912→                else {
+   913→                    const t = Date.now()
+   914→                      , r = p();
+   915→                    !function(t, e, n) {
+   916→                        var r, i;
+   917→                        null !== (r = t.msecs) && void 0 !== r || (t.msecs = -1 / 0),
+   918→                        null !== (i = t.nsecs) && void 0 !== i || (t.nsecs = 0),
+   919→                        e === t.msecs ? (t.nsecs++,
+   920→                        t.nsecs >= 1e4 && (t.node = void 0,
+   921→                        t.nsecs = 0)) : e > t.msecs ? t.nsecs = 0 : e < t.msecs && (t.node = void 0),
+   922→                        t.node || (t.node = n.slice(10, 16),
+   923→                        t.node[0] |= 1,
+   924→                        t.clockseq = 16383 & (n[8] << 8 | n[9])),
+   925→                        t.msecs = e
+   926→                    }(g, t, r),
+   927→                    a = m(r, g.msecs, g.nsecs, c ? void 0 : g.clockseq, c ? void 0 : g.node, e, n)
+   928→                }
+   929→                return null != e ? e : l(a)
+   930→            };
+   931→            function h(t) {
+   932→                const e = function(t) {
+   933→                    return Uint8Array.of((15 & t[6]) << 4 | t[7] >> 4 & 15, (15 & t[7]) << 4 | (240 & t[4]) >> 4, (15 & t[4]) << 4 | (240 & t[5]) >> 4, (15 & t[5]) << 4 | (240 & t[0]) >> 4, (15 & t[0]) << 4 | (240 & t[1]) >> 4, (15 & t[1]) << 4 | (240 & t[2]) >> 4, 96 | 15 & t[2], t[3], t[8], t[9], t[10], t[11], t[12], t[13], t[14], t[15])
+   934→                }("string" == typeof t ? a(t) : t);
+   935→                return "string" == typeof t ? l(e) : e
+   936→            }
+   937→            function y(t) {
+   938→                return 14 + (t + 64 >>> 9 << 4) + 1
+   939→            }
+   940→            function T(t, e) {
+   941→                const n = (65535 & t) + (65535 & e);
+   942→                return (t >> 16) + (e >> 16) + (n >> 16) << 16 | 65535 & n
+   943→            }
+   944→            function w(t, e, n, r, i, o) {
+   945→                return T((s = T(T(e, t), T(r, o))) << (a = i) | s >>> 32 - a, n);
+   946→                var s, a
+   947→            }
+   948→            function b(t, e, n, r, i, o, s) {
+   949→                return w(e & n | ~e & r, t, e, i, o, s)
+   950→            }
+   951→            function S(t, e, n, r, i, o, s) {
+   952→                return w(e & r | n & ~r, t, e, i, o, s)
+   953→            }
+   954→            function E(t, e, n, r, i, o, s) {
+   955→                return w(e ^ n ^ r, t, e, i, o, s)
+   956→            }
+   957→            function L(t, e, n, r, i, o, s) {
+   958→                return w(n ^ (e | ~r), t, e, i, o, s)
+   959→            }
+   960→            const D = function(t) {
+   961→                return function(t) {
+   962→                    const e = new Uint8Array(4 * t.length);
+   963→                    for (let n = 0; n < 4 * t.length; n++)
+   964→                        e[n] = t[n >> 2] >>> n % 4 * 8 & 255;
+   965→                    return e
+   966→                }(function(t, e) {
+   967→                    const n = new Uint32Array(y(e)).fill(0);
+   968→                    n.set(t),
+   969→                    n[e >> 5] |= 128 << e % 32,
+   970→                    n[n.length - 1] = e,
+   971→                    t = n;
+   972→                    let r = 1732584193
+   973→                      , i = -271733879
+   974→                      , o = -1732584194
+   975→                      , s = 271733878;
+   976→                    for (let e = 0; e < t.length; e += 16) {
+   977→                        const n = r
+   978→                          , a = i
+   979→                          , c = o
+   980→                          , l = s;
+   981→                        r = b(r, i, o, s, t[e], 7, -680876936),
+   982→                        s = b(s, r, i, o, t[e + 1], 12, -389564586),
+   983→                        o = b(o, s, r, i, t[e + 2], 17, 606105819),
+   984→                        i = b(i, o, s, r, t[e + 3], 22, -1044525330),
+   985→                        r = b(r, i, o, s, t[e + 4], 7, -176418897),
+   986→                        s = b(s, r, i, o, t[e + 5], 12, 1200080426),
+   987→                        o = b(o, s, r, i, t[e + 6], 17, -1473231341),
+   988→                        i = b(i, o, s, r, t[e + 7], 22, -45705983),
+   989→                        r = b(r, i, o, s, t[e + 8], 7, 1770035416),
+   990→                        s = b(s, r, i, o, t[e + 9], 12, -1958414417),
+   991→                        o = b(o, s, r, i, t[e + 10], 17, -42063),
+   992→                        i = b(i, o, s, r, t[e + 11], 22, -1990404162),
+   993→                        r = b(r, i, o, s, t[e + 12], 7, 1804603682),
+   994→                        s = b(s, r, i, o, t[e + 13], 12, -40341101),
+   995→                        o = b(o, s, r, i, t[e + 14], 17, -1502002290),
+   996→                        i = b(i, o, s, r, t[e + 15], 22, 1236535329),
+   997→                        r = S(r, i, o, s, t[e + 1], 5, -165796510),
+   998→                        s = S(s, r, i, o, t[e + 6], 9, -1069501632),
+   999→                        o = S(o, s, r, i, t[e + 11], 14, 643717713),
+  1000→                        i = S(i, o, s, r, t[e], 20, -373897302),
+  1001→                        r = S(r, i, o, s, t[e + 5], 5, -701558691),
+  1002→                        s = S(s, r, i, o, t[e + 10], 9, 38016083),
+  1003→                        o = S(o, s, r, i, t[e + 15], 14, -660478335),
+  1004→                        i = S(i, o, s, r, t[e + 4], 20, -405537848),
+  1005→                        r = S(r, i, o, s, t[e + 9], 5, 568446438),
+  1006→                        s = S(s, r, i, o, t[e + 14], 9, -1019803690),
+  1007→                        o = S(o, s, r, i, t[e + 3], 14, -187363961),
+  1008→                        i = S(i, o, s, r, t[e + 8], 20, 1163531501),
+  1009→                        r = S(r, i, o, s, t[e + 13], 5, -1444681467),
+  1010→                        s = S(s, r, i, o, t[e + 2], 9, -51403784),
+  1011→                        o = S(o, s, r, i, t[e + 7], 14, 1735328473),
+  1012→                        i = S(i, o, s, r, t[e + 12], 20, -1926607734),
+  1013→                        r = E(r, i, o, s, t[e + 5], 4, -378558),
+  1014→                        s = E(s, r, i, o, t[e + 8], 11, -2022574463),
+  1015→                        o = E(o, s, r, i, t[e + 11], 16, 1839030562),
+  1016→                        i = E(i, o, s, r, t[e + 14], 23, -35309556),
+  1017→                        r = E(r, i, o, s, t[e + 1], 4, -1530992060),
+  1018→                        s = E(s, r, i, o, t[e + 4], 11, 1272893353),
+  1019→                        o = E(o, s, r, i, t[e + 7], 16, -155497632),
+  1020→                        i = E(i, o, s, r, t[e + 10], 23, -1094730640),
+  1021→                        r = E(r, i, o, s, t[e + 13], 4, 681279174),
+  1022→                        s = E(s, r, i, o, t[e], 11, -358537222),
+  1023→                        o = E(o, s, r, i, t[e + 3], 16, -722521979),
+  1024→                        i = E(i, o, s, r, t[e + 6], 23, 76029189),
+  1025→                        r = E(r, i, o, s, t[e + 9], 4, -640364487),
+  1026→                        s = E(s, r, i, o, t[e + 12], 11, -421815835),
+  1027→                        o = E(o, s, r, i, t[e + 15], 16, 530742520),
+  1028→                        i = E(i, o, s, r, t[e + 2], 23, -995338651),
+  1029→                        r = L(r, i, o, s, t[e], 6, -198630844),
+  1030→                        s = L(s, r, i, o, t[e + 7], 10, 1126891415),
+  1031→                        o = L(o, s, r, i, t[e + 14], 15, -1416354905),
+  1032→                        i = L(i, o, s, r, t[e + 5], 21, -57434055),
+  1033→                        r = L(r, i, o, s, t[e + 12], 6, 1700485571),
+  1034→                        s = L(s, r, i, o, t[e + 3], 10, -1894986606),
+  1035→                        o = L(o, s, r, i, t[e + 10], 15, -1051523),
+  1036→                        i = L(i, o, s, r, t[e + 1], 21, -2054922799),
+  1037→                        r = L(r, i, o, s, t[e + 8], 6, 1873313359),
+  1038→                        s = L(s, r, i, o, t[e + 15], 10, -30611744),
+  1039→                        o = L(o, s, r, i, t[e + 6], 15, -1560198380),
+  1040→                        i = L(i, o, s, r, t[e + 13], 21, 1309151649),
+  1041→                        r = L(r, i, o, s, t[e + 4], 6, -145523070),
+  1042→                        s = L(s, r, i, o, t[e + 11], 10, -1120210379),
+  1043→                        o = L(o, s, r, i, t[e + 2], 15, 718787259),
+  1044→                        i = L(i, o, s, r, t[e + 9], 21, -343485551),
+  1045→                        r = T(r, n),
+  1046→                        i = T(i, a),
+  1047→                        o = T(o, c),
+  1048→                        s = T(s, l)
+  1049→                    }
+  1050→                    return Uint32Array.of(r, i, o, s)
+  1051→                }(function(t) {
+  1052→                    if (0 === t.length)
+  1053→                        return new Uint32Array;
+  1054→                    const e = new Uint32Array(y(8 * t.length)).fill(0);
+  1055→                    for (let n = 0; n < t.length; n++)
+  1056→                        e[n >> 2] |= (255 & t[n]) << n % 4 * 8;
+  1057→                    return e
+  1058→                }(t), 8 * t.length))
+  1059→            }
+  1060→              , A = "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+  1061→              , P = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
+  1062→            function C(t, e, n, r, i, o) {
+  1063→                const s = "string" == typeof n ? function(t) {
+  1064→                    t = unescape(encodeURIComponent(t));
+  1065→                    const e = new Uint8Array(t.length);
+  1066→                    for (let n = 0; n < t.length; ++n)
+  1067→                        e[n] = t.charCodeAt(n);
+  1068→                    return e
+  1069→                }(n) : n
+  1070→                  , c = "string" == typeof r ? a(r) : r;
+  1071→                if ("string" == typeof r && (r = a(r)),
+  1072→                16 !== (null == r ? void 0 : r.length))
+  1073→                    throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
+  1074→                let u = new Uint8Array(16 + s.length);
+  1075→                if (u.set(c),
+  1076→                u.set(s, c.length),
+  1077→                u = e(u),
+  1078→                u[6] = 15 & u[6] | t,
+  1079→                u[8] = 63 & u[8] | 128,
+  1080→                i) {
+  1081→                    o = o || 0;
+  1082→                    for (let t = 0; t < 16; ++t)
+  1083→                        i[o + t] = u[t];
+  1084→                    return i
+  1085→                }
+  1086→                return l(u)
+  1087→            }
+  1088→            function U(t, e, n, r) {
+  1089→                return C(48, D, t, e, n, r)
+  1090→            }
+  1091→            U.DNS = A,
+  1092→            U.URL = P;
+  1093→            const I = U
+  1094→              , M = {
+  1095→                randomUUID: "undefined" != typeof crypto && crypto.randomUUID && crypto.randomUUID.bind(crypto)
+  1096→            }
+  1097→              , O = function(t, e, n) {
+  1098→                return !M.randomUUID || e || t ? function(t, e, n) {
+  1099→                    var r, i, o;
+  1100→                    const s = null !== (o = null !== (r = (t = t || {}).random) && void 0 !== r ? r : null === (i = t.rng) || void 0 === i ? void 0 : i.call(t)) && void 0 !== o ? o : p();
+  1101→                    if (s.length < 16)
+  1102→                        throw new Error("Random bytes length must be >= 16");
+  1103→                    if (s[6] = 15 & s[6] | 64,
+  1104→                    s[8] = 63 & s[8] | 128,
+  1105→                    e) {
+  1106→                        if ((n = n || 0) < 0 || n + 16 > e.length)
+  1107→                            throw new RangeError(`UUID byte range ${n}:${n + 15} is out of buffer bounds`);
+  1108→                        for (let t = 0; t < 16; ++t)
+  1109→                            e[n + t] = s[t];
+  1110→                        return e
+  1111→                    }
+  1112→                    return l(s)
+  1113→                }(t, e, n) : M.randomUUID()
+  1114→            };
+  1115→            function k(t, e, n, r) {
+  1116→                switch (t) {
+  1117→                case 0:
+  1118→                    return e & n ^ ~e & r;
+  1119→                case 1:
+  1120→                case 3:
+  1121→                    return e ^ n ^ r;
+  1122→                case 2:
+  1123→                    return e & n ^ e & r ^ n & r
+  1124→                }
+  1125→            }
+  1126→            function R(t, e) {
+  1127→                return t << e | t >>> 32 - e
+  1128→            }
+  1129→            const B = function(t) {
+  1130→                const e = [1518500249, 1859775393, 2400959708, 3395469782]
+  1131→                  , n = [1732584193, 4023233417, 2562383102, 271733878, 3285377520]
+  1132→                  , r = new Uint8Array(t.length + 1);
+  1133→                r.set(t),
+  1134→                r[t.length] = 128;
+  1135→                const i = (t = r).length / 4 + 2
+  1136→                  , o = Math.ceil(i / 16)
+  1137→                  , s = new Array(o);
+  1138→                for (let e = 0; e < o; ++e) {
+  1139→                    const n = new Uint32Array(16);
+  1140→                    for (let r = 0; r < 16; ++r)
+  1141→                        n[r] = t[64 * e + 4 * r] << 24 | t[64 * e + 4 * r + 1] << 16 | t[64 * e + 4 * r + 2] << 8 | t[64 * e + 4 * r + 3];
+  1142→                    s[e] = n
+  1143→                }
+  1144→                s[o - 1][14] = 8 * (t.length - 1) / Math.pow(2, 32),
+  1145→                s[o - 1][14] = Math.floor(s[o - 1][14]),
+  1146→                s[o - 1][15] = 8 * (t.length - 1) & 4294967295;
+  1147→                for (let t = 0; t < o; ++t) {
+  1148→                    const r = new Uint32Array(80);
+  1149→                    for (let e = 0; e < 16; ++e)
+  1150→                        r[e] = s[t][e];
+  1151→                    for (let t = 16; t < 80; ++t)
+  1152→                        r[t] = R(r[t - 3] ^ r[t - 8] ^ r[t - 14] ^ r[t - 16], 1);
+  1153→                    let i = n[0]
+  1154→                      , o = n[1]
+  1155→                      , a = n[2]
+  1156→                      , c = n[3]
+  1157→                      , l = n[4];
+  1158→                    for (let t = 0; t < 80; ++t) {
+  1159→                        const n = Math.floor(t / 20)
+  1160→                          , s = R(i, 5) + k(n, o, a, c) + l + e[n] + r[t] >>> 0;
+  1161→                        l = c,
+  1162→                        c = a,
+  1163→                        a = R(o, 30) >>> 0,
+  1164→                        o = i,
+  1165→                        i = s
+  1166→                    }
+  1167→                    n[0] = n[0] + i >>> 0,
+  1168→                    n[1] = n[1] + o >>> 0,
+  1169→                    n[2] = n[2] + a >>> 0,
+  1170→                    n[3] = n[3] + c >>> 0,
+  1171→                    n[4] = n[4] + l >>> 0
+  1172→                }
+  1173→                return Uint8Array.of(n[0] >> 24, n[0] >> 16, n[0] >> 8, n[0], n[1] >> 24, n[1] >> 16, n[1] >> 8, n[1], n[2] >> 24, n[2] >> 16, n[2] >> 8, n[2], n[3] >> 24, n[3] >> 16, n[3] >> 8, n[3], n[4] >> 24, n[4] >> 16, n[4] >> 8, n[4])
+  1174→            };
+  1175→            function j(t, e, n, r) {
+  1176→                return C(80, B, t, e, n, r)
+  1177→            }
+  1178→            j.DNS = A,
+  1179→            j.URL = P;
+  1180→            const _ = j
+  1181→              , x = function(t, e, n) {
+  1182→                null != t || (t = {}),
+  1183→                null != n || (n = 0);
+  1184→                let r = v(Object.assign(Object.assign({}, t), {
+  1185→                    _v6: !0
+  1186→                }), new Uint8Array(16));
+  1187→                if (r = h(r),
+  1188→                e) {
+  1189→                    for (let t = 0; t < 16; t++)
+  1190→                        e[n + t] = r[t];
+  1191→                    return e
+  1192→                }
+  1193→                return l(r)
+  1194→            };
+  1195→            function F(t) {
+  1196→                const e = (n = "string" == typeof t ? a(t) : t,
+  1197→                Uint8Array.of((15 & n[3]) << 4 | n[4] >> 4 & 15, (15 & n[4]) << 4 | (240 & n[5]) >> 4, (15 & n[5]) << 4 | 15 & n[6], n[7], (15 & n[1]) << 4 | (240 & n[2]) >> 4, (15 & n[2]) << 4 | (240 & n[3]) >> 4, 16 | (240 & n[0]) >> 4, (15 & n[0]) << 4 | (240 & n[1]) >> 4, n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]));
+  1198→                var n;
+  1199→                return "string" == typeof t ? l(e) : e
+  1200→            }
+  1201→            const q = {};
+  1202→            function N(t, e, n, r, i=0) {
+  1203→                if (t.length < 16)
+  1204→                    throw new Error("Random bytes length must be >= 16");
+  1205→                if (r) {
+  1206→                    if (i < 0 || i + 16 > r.length)
+  1207→                        throw new RangeError(`UUID byte range ${i}:${i + 15} is out of buffer bounds`)
+  1208→                } else
+  1209→                    r = new Uint8Array(16),
+  1210→                    i = 0;
+  1211→                return null != e || (e = Date.now()),
+  1212→                null != n || (n = 127 * t[6] << 24 | t[7] << 16 | t[8] << 8 | t[9]),
+  1213→                r[i++] = e / 1099511627776 & 255,
+  1214→                r[i++] = e / 4294967296 & 255,
+  1215→                r[i++] = e / 16777216 & 255,
+  1216→                r[i++] = e / 65536 & 255,
+  1217→                r[i++] = e / 256 & 255,
+  1218→                r[i++] = 255 & e,
+  1219→                r[i++] = 112 | n >>> 28 & 15,
+  1220→                r[i++] = n >>> 20 & 255,
+  1221→                r[i++] = 128 | n >>> 14 & 63,
+  1222→                r[i++] = n >>> 6 & 255,
+  1223→                r[i++] = n << 2 & 255 | 3 & t[10],
+  1224→                r[i++] = t[11],
+  1225→                r[i++] = t[12],
+  1226→                r[i++] = t[13],
+  1227→                r[i++] = t[14],
+  1228→                r[i++] = t[15],
+  1229→                r
+  1230→            }
+  1231→            const V = function(t, e, n) {
+  1232→                var r, i, o;
+  1233→                let s;
+  1234→                if (t)
+  1235→                    s = N(null !== (o = null !== (r = t.random) && void 0 !== r ? r : null === (i = t.rng) || void 0 === i ? void 0 : i.call(t)) && void 0 !== o ? o : p(), t.msecs, t.seq, e, n);
+  1236→                else {
+  1237→                    const t = Date.now()
+  1238→                      , r = p();
+  1239→                    !function(t, e, n) {
+  1240→                        var r, i;
+  1241→                        null !== (r = t.msecs) && void 0 !== r || (t.msecs = -1 / 0),
+  1242→                        null !== (i = t.seq) && void 0 !== i || (t.seq = 0),
+  1243→                        e > t.msecs ? (t.seq = n[6] << 23 | n[7] << 16 | n[8] << 8 | n[9],
+  1244→                        t.msecs = e) : (t.seq = t.seq + 1 | 0,
+  1245→                        0 === t.seq && t.msecs++)
+  1246→                    }(q, t, r),
+  1247→                    s = N(r, q.msecs, q.seq, e, n)
+  1248→                }
+  1249→                return null != e ? e : l(s)
+  1250→            }
+  1251→              , $ = function(t) {
+  1252→                if (!s(t))
+  1253→                    throw TypeError("Invalid UUID");
+  1254→                return parseInt(t.slice(14, 15), 16)
+  1255→            }
+  1256→        }
+  1257→    }
+  1258→      , e = {};
+  1259→    function n(r) {
+  1260→        var i = e[r];
+  1261→        if (void 0 !== i)
+  1262→            return i.exports;
+  1263→        var o = e[r] = {
+  1264→            exports: {}
+  1265→        };
+  1266→        return t[r].call(o.exports, o, o.exports, n),
+  1267→        o.exports
+  1268→    }
+  1269→    n.d = (t, e) => {
+  1270→        for (var r in e)
+  1271→            n.o(e, r) && !n.o(t, r) && Object.defineProperty(t, r, {
+  1272→                enumerable: !0,
+  1273→                get: e[r]
+  1274→            })
+  1275→    }
+  1276→    ,
+  1277→    n.o = (t, e) => Object.prototype.hasOwnProperty.call(t, e),
+  1278→    n.r = t => {
+  1279→        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(t, Symbol.toStringTag, {
+  1280→            value: "Module"
+  1281→        }),
+  1282→        Object.defineProperty(t, "__esModule", {
+  1283→            value: !0
+  1284→        })
+  1285→    }
+  1286→    ,
+  1287→    ( () => {
+  1288→        "use strict";
+  1289→        const t = n(696)
+  1290→          , e = n(323)
+  1291→          , r = n(173)
+  1292→          , i = n(791)
+  1293→          , o = n(674);
+  1294→        ( () => {
+  1295→            function n(t) {
+  1296→                let e = "";
+  1297→                if (e = window.location.origin ? window.location.origin : `${window.location.protocol}://${window.location.host}`,
+  1298→                t && "string" == typeof t)
+  1299→                    if (0 === t.indexOf("/"))
+  1300→                        e += t;
+  1301→                    else
+  1302→                        try {
+  1303→                            const e = new URL(t);
+  1304→                            return `${e.protocol}://${e.host}${e.pathname}`
+  1305→                        } catch (t) {}
+  1306→                else {
+  1307→                    const t = window.location.pathname;
+  1308→                    t && t.length > 0 && (e += t)
+  1309→                }
+  1310→                return e
+  1311→            }
+  1312→            !function() {
+  1313→                const s = window.performance || window.webkitPerformance || window.msPerformance || window.mozPerformance
+  1314→                  , a = "data-cf-beacon"
+  1315→                  , c = document.currentScript || ("function" == typeof document.querySelector ? document.querySelector(`script[${a}]`) : void 0);
+  1316→                let l, u, d = (0,
+  1317→                i.v4)(), f = [], p = window.__cfBeacon ? window.__cfBeacon : {};
+  1318→                if (p && "single" === p.load)
+  1319→                    return;
+  1320→                if (c) {
+  1321→                    const t = c.getAttribute(a);
+  1322→                    if (t)
+  1323→                        try {
+  1324→                            p = Object.assign(Object.assign({}, p), JSON.parse(t))
+  1325→                        } catch (t) {}
+  1326→                    else {
+  1327→                        const t = c.getAttribute("src");
+  1328→                        if (t && "function" == typeof URLSearchParams) {
+  1329→                            const e = new URLSearchParams(t.replace(/^[^\?]+\??/, ""))
+  1330→                              , n = e.get("token");
+  1331→                            n && (p.token = n);
+  1332→                            const r = e.get("spa");
+  1333→                            p.spa = null === r || "true" === r
+  1334→                        }
+  1335→                    }
+  1336→                    p && "multi" !== p.load && (p.load = "single"),
+  1337→                    window.__cfBeacon = p
+  1338→                }
+  1339→                if (!s || !p || !p.token)
+  1340→                    return;
+  1341→                let g, m, v = !1, h = 0;
+  1342→                const y = {};
+  1343→                function T(t) {
+  1344→                    var e, n, r, i, o, s;
+  1345→                    const a = window.location.pathname;
+  1346→                    let c;
+  1347→                    switch (m || (m = t.navigationType),
+  1348→                    "INP" !== t.name && (y[t.name.toLowerCase()] = {
+  1349→                        value: t.value,
+  1350→                        path: a
+  1351→                    }),
+  1352→                    t.name) {
+  1353→                    case "CLS":
+  1354→                        c = t.attribution,
+  1355→                        c && y.cls && (y.cls.element = c.largestShiftTarget,
+  1356→                        y.cls.currentRect = null === (e = c.largestShiftSource) || void 0 === e ? void 0 : e.currentRect,
+  1357→                        y.cls.previousRect = null === (n = c.largestShiftSource) || void 0 === n ? void 0 : n.previousRect);
+  1358→                        break;
+  1359→                    case "LCP":
+  1360→                        c = t.attribution,
+  1361→                        c && y.lcp && (y.lcp.element = c.target,
+  1362→                        y.lcp.size = null === (r = c.lcpEntry) || void 0 === r ? void 0 : r.size,
+  1363→                        y.lcp.url = c.url,
+  1364→                        y.lcp.rld = c.resourceLoadDelay,
+  1365→                        y.lcp.rlt = c.resourceLoadDuration,
+  1366→                        y.lcp.erd = c.elementRenderDelay,
+  1367→                        y.lcp.it = null === (i = c.lcpResourceEntry) || void 0 === i ? void 0 : i.initiatorType,
+  1368→                        y.lcp.fp = null === (s = null === (o = c.lcpEntry) || void 0 === o ? void 0 : o.element) || void 0 === s ? void 0 : s.getAttribute("fetchpriority"));
+  1369→                        break;
+  1370→                    case "INP":
+  1371→                        (null == y.inp || Number(y.inp.value) < Number(t.value)) && (y.inp = {
+  1372→                            value: Number(t.value),
+  1373→                            path: a
+  1374→                        },
+  1375→                        c = t.attribution,
+  1376→                        c && y.inp && (y.inp.element = c.interactionTarget,
+  1377→                        y.inp.name = c.interactionType,
+  1378→                        y.inp.idy = c.inputDelay,
+  1379→                        y.inp.pdn = c.processingDuration,
+  1380→                        y.inp.pdy = c.presentationDelay))
+  1381→                    }
+  1382→                }
+  1383→                "function" == typeof PerformanceObserver && ((0,
+  1384→                r.onLCP)(T),
+  1385→                (0,
+  1386→                r.onFCP)(T),
+  1387→                (0,
+  1388→                r.onINP)(T),
+  1389→                (0,
+  1390→                r.onTTFB)(T),
+  1391→                PerformanceObserver.supportedEntryTypes && PerformanceObserver.supportedEntryTypes.includes("layout-shift") && (0,
+  1392→                r.onCLS)(T, {
+  1393→                    reportAllChanges: !0
+  1394→                })),
+  1395→                document.addEventListener("visibilitychange", () => {
+  1396→                    if ("hidden" === document.visibilityState) {
+  1397→                        if (w && D()) {
+  1398→                            const t = n();
+  1399→                            (null == g ? void 0 : g.url) == t && (null == g ? void 0 : g.triggered) || S(),
+  1400→                            A(t)
+  1401→                        }
+  1402→                        !v && g && (v = !0,
+  1403→                        E())
+  1404→                    } else
+  1405→                        "visible" === document.visibilityState && (h = (new Date).getTime())
+  1406→                }
+  1407→                );
+  1408→                const w = p && (void 0 === p.spa || !0 === p.spa)
+  1409→                  , b = p.send && p.send.to ? p.send.to : void 0 === p.version ? "https://cloudflareinsights.com/cdn-cgi/rum" : null
+  1410→                  , S = r => {
+  1411→                    let i = function(e) {
+  1412→                        const r = s.timing
+  1413→                          , i = s.memory
+  1414→                          , a = e || n()
+  1415→                          , c = {
+  1416→                            memory: {},
+  1417→                            timings: {},
+  1418→                            resources: [],
+  1419→                            referrer: C(),
+  1420→                            eventType: t.EventType.Load,
+  1421→                            firstPaint: 0,
+  1422→                            firstContentfulPaint: 0,
+  1423→                            startTime: P(),
+  1424→                            versions: {
+  1425→                                fl: p ? p.version : "",
+  1426→                                js: "2026.6.0",
+  1427→                                timings: 1
+  1428→                            },
+  1429→                            pageloadId: d,
+  1430→                            location: a,
+  1431→                            nt: m,
+  1432→                            serverTimings: U()
+  1433→                        };
+  1434→                        if (null == l) {
+  1435→                            if ("function" == typeof s.getEntriesByType) {
+  1436→                                const t = s.getEntriesByType("navigation");
+  1437→                                if (t && Array.isArray(t) && t.length > 0) {
+  1438→                                    c.timingsV2 = {},
+  1439→                                    c.versions.timings = 2,
+  1440→                                    c.dt = t[0].deliveryType,
+  1441→                                    delete c.timings;
+  1442→                                    const e = t[0];
+  1443→                                    (0,
+  1444→                                    o.buildTimingsObject)(e, c.timingsV2, o.timingsV2TargetKeys)
+  1445→                                }
+  1446→                            }
+  1447→                            if (1 === c.versions.timings) {
+  1448→                                const t = r;
+  1449→                                c.timings && (0,
+  1450→                                o.buildTimingsObject)(t, c.timings, o.timingsTargetKeys)
+  1451→                            }
+  1452→                            !function(t, e) {
+  1453→                                for (const n in t) {
+  1454→                                    const r = t[n];
+  1455→                                    void 0 !== e && ("number" != typeof r && "string" != typeof r || (e[n] = r))
+  1456→                                }
+  1457→                            }(i, c.memory)
+  1458→                        } else
+  1459→                            I(c);
+  1460→                        return c.firstPaint = M("first-paint"),
+  1461→                        c.firstContentfulPaint = M("first-contentful-paint"),
+  1462→                        p && (p.icTag && (c.icTag = p.icTag),
+  1463→                        c.siteToken = p.token),
+  1464→                        void 0 !== l && (delete c.timings,
+  1465→                        delete c.memory),
+  1466→                        c
+  1467→                    }(r);
+  1468→                    i && p && (i.resources = [],
+  1469→                    p && ((0,
+  1470→                    e.sendObjectBeacon)("", i, () => {}
+  1471→                    , !1, b),
+  1472→                    void 0 !== p.forward && void 0 !== p.forward.url && (0,
+  1473→                    e.sendObjectBeacon)("", i, () => {}
+  1474→                    , !1, p.forward.url)))
+  1475→                }
+  1476→                  , E = () => {
+  1477→                    let r = function() {
+  1478→                        const e = s.getEntriesByType("navigation")[0];
+  1479→                        let r = "";
+  1480→                        try {
+  1481→                            r = "function" == typeof s.getEntriesByType ? new URL(null == e ? void 0 : e.name).pathname : u ? new URL(u).pathname : window.location.pathname
+  1482→                        } catch (t) {}
+  1483→                        const i = {
+  1484→                            referrer: document.referrer || "",
+  1485→                            eventType: t.EventType.WebVitalsV2,
+  1486→                            versions: {
+  1487→                                js: "2026.6.0"
+  1488→                            },
+  1489→                            pageloadId: d,
+  1490→                            location: n(),
+  1491→                            landingPath: r,
+  1492→                            startTime: P(),
+  1493→                            nt: m,
+  1494→                            serverTimings: U()
+  1495→                        };
+  1496→                        return p && (p.version && (i.versions.fl = p.version),
+  1497→                        p.icTag && (i.icTag = p.icTag),
+  1498→                        i.siteToken = p.token),
+  1499→                        y && ["lcp", "cls", "fcp", "ttfb", "inp"].forEach(t => {
+  1500→                            i[t] = {
+  1501→                                value: -1,
+  1502→                                path: void 0
+  1503→                            },
+  1504→                            y[t] && void 0 !== y[t].value && (i[t] = y[t])
+  1505→                        }
+  1506→                        ),
+  1507→                        I(i),
+  1508→                        i
+  1509→                    }();
+  1510→                    p && (0,
+  1511→                    e.sendObjectBeacon)("", r, () => {}
+  1512→                    , !0, b)
+  1513→                }
+  1514→                  , L = () => {
+  1515→                    const t = window.__cfRl && window.__cfRl.done || window.__cfQR && window.__cfQR.done;
+  1516→                    t ? t.then(S) : S(),
+  1517→                    g = {
+  1518→                        id: d,
+  1519→                        url: n(),
+  1520→                        ts: (new Date).getTime(),
+  1521→                        triggered: !0
+  1522→                    }
+  1523→                }
+  1524→                ;
+  1525→                "complete" === window.document.readyState ? L() : window.addEventListener("load", () => {
+  1526→                    window.setTimeout(L)
+  1527→                }
+  1528→                );
+  1529→                const D = () => w && 0 === f.filter(t => t.id === d).length
+  1530→                  , A = t => {
+  1531→                    f.push({
+  1532→                        id: d,
+  1533→                        url: t,
+  1534→                        ts: (new Date).getTime()
+  1535→                    }),
+  1536→                    f.length > 3 && f.shift()
+  1537→                }
+  1538→                ;
+  1539→                function P() {
+  1540→                    return s.timeOrigin
+  1541→                }
+  1542→                function C() {
+  1543→                    const t = document.referrer || ""
+  1544→                      , e = f[f.length - 1];
+  1545→                    return w && g && e ? e.url : t
+  1546→                }
+  1547→                function U() {
+  1548→                    if (!p || !p.serverTiming)
+  1549→                        return;
+  1550→                    let t = [];
+  1551→                    for (const e of ["navigation", "resource"])
+  1552→                        for (const {name: n, serverTiming: r} of s.getEntriesByType(e))
+  1553→                            if (r) {
+  1554→                                if ("resource" === e) {
+  1555→                                    const t = p.serverTiming.location_startswith;
+  1556→                                    if (!t || !Array.isArray(t))
+  1557→                                        continue;
+  1558→                                    let e = !1;
+  1559→                                    for (const r of t)
+  1560→                                        if (n.startsWith(r)) {
+  1561→                                            e = !0;
+  1562→                                            break
+  1563→                                        }
+  1564→                                    if (!e)
+  1565→                                        continue
+  1566→                                }
+  1567→                                for (const {name: i, description: o, duration: s} of r)
+  1568→                                    if (p.serverTiming.name && p.serverTiming.name[i])
+  1569→                                        try {
+  1570→                                            const r = new URL(n);
+  1571→                                            t.push({
+  1572→                                                location: "resource" === e ? `${r.origin}${r.pathname}` : void 0,
+  1573→                                                name: i,
+  1574→                                                dur: s,
+  1575→                                                desc: o
+  1576→                                            })
+  1577→                                        } catch (t) {}
+  1578→                            }
+  1579→                    return t
+  1580→                }
+  1581→                function I(t) {
+  1582→                    if ("function" == typeof s.getEntriesByType) {
+  1583→                        const e = s.getEntriesByType("navigation");
+  1584→                        let n = {};
+  1585→                        t.timingsV2 = {},
+  1586→                        e && e[0] && (e[0].nextHopProtocol && (n.nextHopProtocol = e[0].nextHopProtocol),
+  1587→                        e[0].transferSize && (n.transferSize = e[0].transferSize),
+  1588→                        e[0].decodedBodySize && (n.decodedBodySize = e[0].decodedBodySize),
+  1589→                        t.dt = e[0].deliveryType),
+  1590→                        (0,
+  1591→                        o.buildTimingsObject)(n, t.timingsV2, o.timingsV2TargetKeys)
+  1592→                    }
+  1593→                }
+  1594→                function M(t) {
+  1595→                    var e;
+  1596→                    if ("first-contentful-paint" === t && y.fcp && y.fcp.value)
+  1597→                        return y.fcp.value;
+  1598→                    if ("function" == typeof s.getEntriesByType) {
+  1599→                        const n = null === (e = s.getEntriesByType("paint")) || void 0 === e ? void 0 : e.filter(e => e.name === t)[0];
+  1600→                        return n ? n.startTime : 0
+  1601→                    }
+  1602→                    return 0
+  1603→                }
+  1604→                w && (u = n(),
+  1605→                (t => {
+  1606→                    var e = t.pushState;
+  1607→                    if (e) {
+  1608→                        let r = () => {
+  1609→                            d = (0,
+  1610→                            i.v4)(),
+  1611→                            h = 0
+  1612→                        }
+  1613→                        ;
+  1614→                        t.pushState = function(i, o, s) {
+  1615→                            l = n(s);
+  1616→                            const a = n();
+  1617→                            let c = !0;
+  1618→                            return l == a && (c = !1),
+  1619→                            c && (D() && ((null == g ? void 0 : g.url) == a && (null == g ? void 0 : g.triggered) || S(a),
+  1620→                            A(a)),
+  1621→                            r()),
+  1622→                            e.apply(t, [i, o, s])
+  1623→                        }
+  1624→                        ,
+  1625→                        window.addEventListener("popstate", function(t) {
+  1626→                            D() && ((null == g ? void 0 : g.url) == l && (null == g ? void 0 : g.triggered) || S(l),
+  1627→                            A(l)),
+  1628→                            l = n(),
+  1629→                            r()
+  1630→                        })
+  1631→                    }
+  1632→                }
+  1633→                )(window.history))
+  1634→            }()
+  1635→        }
+  1636→        )()
+  1637→    }
+  1638→    )()
+  1639→}
+  1640→)();
+  1641→

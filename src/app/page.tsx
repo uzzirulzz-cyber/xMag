@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Wallet, ChevronRight, Home as HomeIcon } from 'lucide-react'
+import { Wallet, ChevronRight, Home as HomeIcon, Tv } from 'lucide-react'
 import { Sidebar } from '@/components/panel/sidebar'
 import { Topbar } from '@/components/panel/topbar'
 import { BalanceCards } from '@/components/panel/balance-cards'
 import { AddFunds } from '@/components/panel/add-funds'
 import { TransactionHistory } from '@/components/panel/transaction-history'
+import { MySubscriptions } from '@/components/panel/my-subscriptions'
+import { CustomSubscriptionDialog } from '@/components/panel/custom-subscription-dialog'
+import { Button } from '@/components/ui/button'
 import {
   Sheet,
   SheetContent,
@@ -19,6 +22,7 @@ import type { Overview, PaymentMethod } from '@/components/panel/types'
 export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [isDark, setIsDark] = useState(false)
+  const [subDialogOpen, setSubDialogOpen] = useState(false)
 
   // Apply theme class to <html>
   useEffect(() => {
@@ -83,7 +87,7 @@ export default function Home() {
               <ChevronRight className="h-3 w-3" />
               <span>Panel</span>
               <ChevronRight className="h-3 w-3" />
-              <span className="text-foreground font-medium">Funds</span>
+              <span className="text-foreground font-medium">Funds &amp; Subscriptions</span>
             </nav>
             <div className="flex items-end justify-between gap-3 flex-wrap">
               <div>
@@ -94,14 +98,23 @@ export default function Home() {
                   Funds Management
                 </h1>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Welcome back, {overview?.reseller.fullName ?? 'Reseller'}. Manage your credit balance and funding requests.
+                  Welcome back, {overview?.reseller.fullName ?? 'Reseller'}. Manage your credit balance, fund your account, and create IPTV lines.
                 </p>
               </div>
+              <Button
+                onClick={() => setSubDialogOpen(true)}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white gap-1.5"
+              >
+                <Tv className="h-4 w-4" /> New Subscription
+              </Button>
             </div>
           </div>
 
           {/* Balance summary */}
           <BalanceCards overview={overview} loading={overviewLoading} />
+
+          {/* My subscriptions */}
+          <MySubscriptions onNew={() => setSubDialogOpen(true)} />
 
           {/* Add funds + quick tips */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -117,6 +130,13 @@ export default function Home() {
 
         <Footer />
       </div>
+
+      {/* Custom Subscription dialog */}
+      <CustomSubscriptionDialog
+        open={subDialogOpen}
+        onOpenChange={setSubDialogOpen}
+        balance={overview?.balance ?? 0}
+      />
     </div>
   )
 }

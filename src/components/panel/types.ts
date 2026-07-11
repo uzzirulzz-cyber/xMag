@@ -79,3 +79,37 @@ export interface FundRequest {
   createdAt: string
   paymentMethod?: PaymentMethod
 }
+
+export interface ContentCategory {
+  id: string
+  type: 'live' | 'vod' | 'series'
+  code: string
+  name: string
+  itemCount: number
+  sortOrder: number
+}
+
+export interface SubscriptionPlan {
+  months: number
+  label: string
+  price: number
+  popular?: boolean
+}
+
+export interface Subscription {
+  id: string
+  resellerId: string
+  username: string
+  password: string
+  planMonths: number
+  creditsCost: number
+  excludedLive: boolean
+  excludedVod: boolean
+  excludedSeries: boolean
+  seriesCategoryIds: string
+  seriesCategoryCount: number
+  dns: string
+  status: string
+  expiresAt: string
+  createdAt: string
+}
