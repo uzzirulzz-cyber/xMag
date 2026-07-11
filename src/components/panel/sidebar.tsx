@@ -1,0 +1,130 @@
+'use client'
+
+import {
+  LayoutDashboard,
+  Wallet,
+  Tv,
+  Film,
+  Clapperboard,
+  Users,
+  ShoppingBag,
+  Server,
+  Settings,
+  LifeBuoy,
+  Star,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+interface NavItem {
+  label: string
+  icon: React.ElementType
+  active?: boolean
+  badge?: string
+}
+
+const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
+  {
+    title: 'Main',
+    items: [
+      { label: 'Dashboard', icon: LayoutDashboard },
+      { label: 'Funds', icon: Wallet, active: true, badge: '3' },
+      { label: 'Orders', icon: ShoppingBag },
+    ],
+  },
+  {
+    title: 'Content',
+    items: [
+      { label: 'Live Streams', icon: Tv },
+      { label: 'Movies', icon: Film },
+      { label: 'Series', icon: Clapperboard },
+      { label: 'Lines', icon: Users },
+    ],
+  },
+  {
+    title: 'System',
+    items: [
+      { label: 'Servers', icon: Server },
+      { label: 'Settings', icon: Settings },
+      { label: 'Support', icon: LifeBuoy },
+    ],
+  },
+]
+
+export function Sidebar({ onNavigate, className }: { onNavigate?: () => void; className?: string }) {
+  return (
+    <div className={cn('flex h-full flex-col bg-sidebar text-sidebar-foreground', className)}>
+      {/* Brand */}
+      <div className="flex items-center gap-3 px-5 h-16 border-b border-sidebar-border shrink-0">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground shadow-sm">
+          <Star className="h-5 w-5 fill-current" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold leading-tight truncate">Star IPTV</p>
+          <p className="text-[11px] text-sidebar-foreground/60 leading-tight truncate">Reseller Panel</p>
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 py-4">
+        {NAV_SECTIONS.map((section) => (
+          <div key={section.title} className="mb-5">
+            <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+              {section.title}
+            </p>
+            <ul className="space-y-0.5">
+              {section.items.map((item) => {
+                const Icon = item.icon
+                return (
+                  <li key={item.label}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        onNavigate?.()
+                      }}
+                      className={cn(
+                        'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+                        item.active
+                          ? 'bg-sidebar-primary text-sidebar-primary-foreground font-medium shadow-sm'
+                          : 'text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                      )}
+                    >
+                      <Icon className="h-[18px] w-[18px] shrink-0" />
+                      <span className="flex-1 truncate">{item.label}</span>
+                      {item.badge && (
+                        <span
+                          className={cn(
+                            'rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none',
+                            item.active
+                              ? 'bg-sidebar-primary-foreground/20 text-sidebar-primary-foreground'
+                              : 'bg-sidebar-accent text-sidebar-accent-foreground',
+                          )}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
+      {/* Footer status */}
+      <div className="shrink-0 border-t border-sidebar-border p-3">
+        <div className="flex items-center gap-3 rounded-lg bg-sidebar-accent/60 px-3 py-2.5">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          </span>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-sidebar-accent-foreground truncate">All servers online</p>
+            <p className="text-[10px] text-sidebar-foreground/50 truncate">99.98% uptime</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

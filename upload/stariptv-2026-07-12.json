@@ -1,0 +1,44 @@
+[
+  {
+    "newnav href": "https://store.stariptv.pk/panel/home",
+    "newnav": "Dashboard\n(current)"
+  },
+  {
+    "newnav href": "https://store.stariptv.pk/panel/iptv",
+    "newnav": "Manage IPTV ( M3U, xAPI )"
+  },
+  {
+    "newnav href": "https://store.stariptv.pk/panel/mac",
+    "newnav": "Manage IPTV MAC"
+  },
+  {
+    "newnav href": "https://store.stariptv.pk/panel/cpage?id=2",
+    "newnav": "Download Android App"
+  },
+  {
+    "newnav href": "https://store.stariptv.pk/panel/ref",
+    "newnav": "Referral Earning"
+  },
+  {
+    "newnav href": "https://store.stariptv.pk/panel/funds",
+    "newnav": "Recharge Account"
+  },
+  {
+    "newnav href": "https://store.stariptv.pk/panel/funds/payment_log",
+    "newnav": "Payment History"
+  },
+  {
+    "newnav href": "https://store.stariptv.pk/panel/iptv_dns",
+    "newnav": "My IPTV DNS",
+    "newnav src": "https://curl.pk/img/u/4d034be9246f0e3d5a8620e822bf0b126267.gif"
+  },
+  {
+    "newnav href": "https://store.stariptv.pk/panel/user_settings",
+    "newnav": "Settings"
+  },
+  {
+    "newnav href": "https://store.stariptv.pk/panel/faq",
+    "newnav": "[Help] FAQs",
+    "newnav src": "https://curl.pk/img/u/4d034be9246f0e3d5a8620e822bf0b126267.gif"
+  }
+]

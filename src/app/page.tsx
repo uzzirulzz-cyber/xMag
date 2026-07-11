@@ -1,0 +1,180 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Wallet, ChevronRight, Home as HomeIcon } from 'lucide-react'
+import { Sidebar } from '@/components/panel/sidebar'
+import { Topbar } from '@/components/panel/topbar'
+import { BalanceCards } from '@/components/panel/balance-cards'
+import { AddFunds } from '@/components/panel/add-funds'
+import { TransactionHistory } from '@/components/panel/transaction-history'
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet'
+import type { Overview, PaymentMethod } from '@/components/panel/types'
+
+export default function Home() {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [isDark, setIsDark] = useState(false)
+
+  // Apply theme class to <html>
+  useEffect(() => {
+    const root = document.documentElement
+    if (isDark) root.classList.add('dark')
+    else root.classList.remove('dark')
+  }, [isDark])
+
+  // Guarantee demo data exists on first load
+  useEffect(() => {
+    fetch('/api/funds/seed', { method: 'POST' }).catch(() => {})
+  }, [])
+
+  const { data: overview, isLoading: overviewLoading } = useQuery<Overview>({
+    queryKey: ['overview'],
+    queryFn: async () => {
+      const res = await fetch('/api/funds/overview')
+      if (!res.ok) throw new Error('Failed to load overview')
+      return res.json()
+    },
+  })
+
+  const { data: methodsData, isLoading: methodsLoading } = useQuery<{ methods: PaymentMethod[] }>({
+    queryKey: ['payment-methods'],
+    queryFn: async () => {
+      const res = await fetch('/api/funds/payment-methods')
+      if (!res.ok) throw new Error('Failed to load payment methods')
+      return res.json()
+    },
+  })
+
+  return (
+    <div className="min-h-screen flex bg-background">
+      {/* Sidebar — desktop */}
+      <aside className="hidden lg:flex w-64 shrink-0 sticky top-0 h-screen">
+        <Sidebar />
+      </aside>
+
+      {/* Sidebar — mobile sheet */}
+      <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+        <SheetContent side="left" className="w-72 p-0 border-0">
+          <SheetTitle className="sr-only">Navigation</SheetTitle>
+          <SheetDescription className="sr-only">Panel navigation menu</SheetDescription>
+          <Sidebar onNavigate={() => setMobileNavOpen(false)} />
+        </SheetContent>
+      </Sheet>
+
+      {/* Main column */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+        <Topbar
+          overview={overview}
+          onMenuClick={() => setMobileNavOpen(true)}
+          onToggleTheme={() => setIsDark((v) => !v)}
+          isDark={isDark}
+        />
+
+        <main className="flex-1 px-4 sm:px-6 py-6 space-y-6">
+          {/* Breadcrumb + heading */}
+          <div className="space-y-1.5">
+            <nav className="flex items-center gap-1.5 text-xs text-muted-foreground" aria-label="Breadcrumb">
+              <HomeIcon className="h-3.5 w-3.5" />
+              <ChevronRight className="h-3 w-3" />
+              <span>Panel</span>
+              <ChevronRight className="h-3 w-3" />
+              <span className="text-foreground font-medium">Funds</span>
+            </nav>
+            <div className="flex items-end justify-between gap-3 flex-wrap">
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Wallet className="h-5 w-5" />
+                  </span>
+                  Funds Management
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Welcome back, {overview?.reseller.fullName ?? 'Reseller'}. Manage your credit balance and funding requests.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Balance summary */}
+          <BalanceCards overview={overview} loading={overviewLoading} />
+
+          {/* Add funds + quick tips */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="xl:col-span-2">
+              <AddFunds methods={methodsData?.methods ?? []} loading={methodsLoading} />
+            </div>
+            <QuickTips />
+          </div>
+
+          {/* Transaction history */}
+          <TransactionHistory currency={overview?.currency} />
+        </main>
+
+        <Footer />
+      </div>
+    </div>
+  )
+}
+
+function QuickTips() {
+  const tips = [
+    {
+      title: 'How funding works',
+      body: 'Send the exact amount to the selected account, then submit the transaction reference. Credit is added after manual verification.',
+    },
+    {
+      title: 'Processing time',
+      body: 'JazzCash & Easypaisa: 10–30 min. Bank transfer: up to 2 hours. USDT: within 10 min of 1 confirmation.',
+    },
+    {
+      title: 'Need help?',
+      body: 'Contact support on WhatsApp +92 300 1234567 or email support@stariptv.pk with your transaction reference for faster resolution.',
+    },
+  ]
+  return (
+    <aside className="space-y-3">
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="text-sm font-semibold mb-1">Quick Tips</h3>
+        <p className="text-xs text-muted-foreground mb-4">Everything you need to fund your account smoothly.</p>
+        <ul className="space-y-4">
+          {tips.map((t) => (
+            <li key={t.title} className="space-y-1">
+              <p className="text-xs font-semibold text-foreground">{t.title}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{t.body}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="rounded-xl border border-primary/30 bg-primary/5 p-5">
+        <p className="text-xs font-semibold text-primary mb-1">Bulk / Reseller rates</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Deposits above PKR 50,000 qualify for a 2% bonus credit on top. Contact your account manager to enable volume pricing.
+        </p>
+      </div>
+    </aside>
+  )
+}
+
+function Footer() {
+  return (
+    <footer className="mt-auto border-t border-border bg-card/50 px-4 sm:px-6 py-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+        <p>© {new Date().getFullYear()} Star IPTV Store. Reseller Panel v2.4.1</p>
+        <div className="flex items-center gap-4">
+          <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+          <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
+          <a href="#" className="hover:text-foreground transition-colors">Support</a>
+          <span className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            All systems operational
+          </span>
+        </div>
+      </div>
+    </footer>
+  )
+}

@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// IPTV reseller account — owns a credit balance used to purchase subscriptions
+model Reseller {
+  id           String        @id @default(cuid())
+  username     String        @unique
+  email        String        @unique
+  fullName     String
+  passwordHash String
+  phone        String?
+  balance      Float         @default(0)
+  currency     String        @default("PKR")
+  status       String        @default("active") // active | suspended
+  role         String        @default("reseller") // reseller | admin
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+  fundRequests FundRequest[]
+}
+
+// Supported funding channels: mobile wallets, bank transfer, crypto, card
+model PaymentMethod {
+  id            String       @id @default(cuid())
+  name          String // JazzCash, Easypaisa, Bank Al Habib, USDT TRC20
+  type          String // mobile_wallet | bank_transfer | crypto | card
+  accountTitle  String
+  accountNumber String
+  bankName      String?
+  network       String? // wallet/currency network e.g. TRC20, Telenor
+  instructions  String
+  minAmount     Float        @default(500)
+  maxAmount     Float        @default(200000)
+  feePercent    Float        @default(0)
+  logoText      String // short label used for the avatar
+  color         String // tailwind-ish accent color hex
+  active        Boolean      @default(true)
+  sortOrder     Int          @default(0)
+  createdAt     DateTime     @default(now())
+  fundRequests  FundRequest[]
+}
+
+// A reseller-initiated request to add funds, pending admin review
+model FundRequest {
+  id              String        @id @default(cuid())
+  resellerId      String
+  paymentMethodId String
+  amount          Float
+  fee             Float         @default(0)
+  total           Float         @default(0)
+  reference       String? // payment transaction id / TID
+  senderNumber    String? // source wallet/account number
+  note            String?
+  screenshotUrl   String?
+  status          String        @default("pending") // pending | approved | rejected
+  reviewerNote    String?
+  reviewedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  reseller        Reseller      @relation(fields: [resellerId], references: [id], onDelete: Cascade)
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  transaction     Transaction?
+}
+
+// Immutable ledger of every credit/debit against a reseller balance
+model Transaction {
+  id            String       @id @default(cuid())
+  resellerId    String
+  type          String // credit | debit
+  category      String // fund | subscription | refund | adjustment
+  amount        Float
+  balanceAfter  Float
+  description   String
+  reference     String?
+  status        String       @default("completed") // pending | completed | failed
+  fundRequestId String?      @unique
+  createdAt     DateTime     @default(now())
+  reseller      Reseller     @relation(fields: [resellerId], references: [id], onDelete: Cascade)
+  fundRequest   FundRequest? @relation(fields: [fundRequestId], references: [id])
+}
