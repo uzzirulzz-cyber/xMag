@@ -63,6 +63,10 @@ export async function ensureSeed() {
     await seedSubscriptions(reseller.id)
   }
 
+  // Seed the notification feed (mirrors legacy global.js notification dropdown)
+  const { ensureNotifications } = await import('@/lib/notifications')
+  await ensureNotifications()
+
   return reseller
 }
 

@@ -149,6 +149,7 @@ export function CustomSubscriptionDialog({
       qc.invalidateQueries({ queryKey: ['overview'] })
       qc.invalidateQueries({ queryKey: ['transactions'] })
       qc.invalidateQueries({ queryKey: ['subscriptions'] })
+      qc.invalidateQueries({ queryKey: ['notifications'] })
       onCreated?.(data.subscription)
       reset()
       onOpenChange(false)

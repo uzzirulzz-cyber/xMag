@@ -86,6 +86,7 @@ export function AddFunds({
       qc.invalidateQueries({ queryKey: ['overview'] })
       qc.invalidateQueries({ queryKey: ['transactions'] })
       qc.invalidateQueries({ queryKey: ['requests'] })
+      qc.invalidateQueries({ queryKey: ['notifications'] })
       onSubmitted?.()
     },
     onError: (err: Error) => {

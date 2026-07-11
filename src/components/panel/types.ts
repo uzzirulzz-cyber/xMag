@@ -113,3 +113,16 @@ export interface Subscription {
   expiresAt: string
   createdAt: string
 }
+
+export type NotificationType = 'info' | 'success' | 'warning' | 'fund' | 'subscription' | 'system'
+
+export interface AppNotification {
+  id: string
+  resellerId: string
+  type: NotificationType
+  title: string
+  message: string
+  link: string | null
+  read: boolean
+  createdAt: string
+}

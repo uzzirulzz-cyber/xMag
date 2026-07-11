@@ -1,9 +1,8 @@
 'use client'
 
-import { Menu, Search, Bell, Wallet, ChevronDown, Sun, Moon } from 'lucide-react'
+import { Menu, Search, Wallet, ChevronDown, Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -14,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { formatCurrency } from '@/lib/format'
+import { NotificationsBell } from './notifications-bell'
 import type { Overview } from './types'
 
 export function Topbar({
@@ -82,12 +82,7 @@ export function Topbar({
         {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
       </Button>
 
-      <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
-        <Bell className="h-5 w-5" />
-        <Badge className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[9px] justify-center bg-destructive text-destructive-foreground border-0">
-          {overview?.pendingCount ?? 0}
-        </Badge>
-      </Button>
+      <NotificationsBell />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

@@ -27,6 +27,7 @@ model Reseller {
   transactions Transaction[]
   fundRequests FundRequest[]
   subscriptions Subscription[]
+  notifications Notification[]
 }
 
 // Supported funding channels: mobile wallets, bank transfer, crypto, card
@@ -125,4 +126,20 @@ model Subscription {
   createdAt        DateTime @default(now())
   reseller         Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
   transaction      Transaction?
+}
+
+// In-app notifications for the reseller — mirrors the legacy global.js
+// load_notifications / load_notifications_unread / load_notification_url flow.
+model Notification {
+  id          String   @id @default(cuid())
+  resellerId  String
+  type        String   // info | success | warning | fund | subscription | system
+  title       String
+  message     String
+  link        String?  // optional in-app anchor, e.g. "#add-funds"
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  reseller    Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
+
+  @@index([resellerId, read, createdAt])
 }
