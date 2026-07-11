@@ -114,7 +114,7 @@ export default function Home() {
           <BalanceCards overview={overview} loading={overviewLoading} />
 
           {/* My subscriptions */}
-          <MySubscriptions onNew={() => setSubDialogOpen(true)} />
+          <MySubscriptions onNew={() => setSubDialogOpen(true)} balance={overview?.balance ?? 0} />
 
           {/* Add funds + quick tips */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

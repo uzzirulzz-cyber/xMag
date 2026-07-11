@@ -110,8 +110,27 @@ export interface Subscription {
   seriesCategoryCount: number
   dns: string
   status: string
+  maxConnections: number
+  currentConnections: number
+  lastConnectedAt: string | null
+  disabledAt: string | null
   expiresAt: string
   createdAt: string
+  updatedAt: string
+}
+
+export interface ConnectionLog {
+  id: string
+  subscriptionId: string
+  ip: string
+  country: string | null
+  countryCode: string | null
+  isp: string | null
+  device: string | null
+  userAgent: string | null
+  connectedAt: string
+  disconnectedAt: string | null
+  durationSec: number | null
 }
 
 export type NotificationType = 'info' | 'success' | 'warning' | 'fund' | 'subscription' | 'system'

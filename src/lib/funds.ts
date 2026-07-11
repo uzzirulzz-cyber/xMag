@@ -227,6 +227,7 @@ async function seedSubscriptions(resellerId: string) {
   const now = new Date()
   const addDays = (d: number) => new Date(now.getTime() + d * 24 * 60 * 60 * 1000)
   const daysAgo = (d: number) => new Date(now.getTime() - d * 24 * 60 * 60 * 1000)
+  const minsAgo = (m: number) => new Date(now.getTime() - m * 60 * 1000)
 
   const seriesCats = await db.contentCategory.findMany({
     where: { type: 'series' },
@@ -244,6 +245,9 @@ async function seedSubscriptions(resellerId: string) {
       excludedSeries: false,
       seriesCategoryIds: '',
       seriesCategoryCount: 0,
+      maxConnections: 2,
+      currentConnections: 1,
+      lastConnectedAt: minsAgo(14),
       createdAt: daysAgo(12),
       expiresAt: addDays(353),
     },
@@ -257,6 +261,9 @@ async function seedSubscriptions(resellerId: string) {
       excludedSeries: false,
       seriesCategoryIds: seriesCats.slice(0, 3).map((c) => c.id).join(','),
       seriesCategoryCount: 3,
+      maxConnections: 1,
+      currentConnections: 0,
+      lastConnectedAt: minsAgo(60 * 5),
       createdAt: daysAgo(10),
       expiresAt: addDays(355),
     },
@@ -270,12 +277,67 @@ async function seedSubscriptions(resellerId: string) {
       excludedSeries: false,
       seriesCategoryIds: '',
       seriesCategoryCount: 0,
+      maxConnections: 1,
+      currentConnections: 1,
+      lastConnectedAt: minsAgo(3),
       createdAt: daysAgo(2),
       expiresAt: addDays(178),
+    },
+    {
+      username: 'axc_7v2n8c',
+      password: 'Bm9Xk2Rp4t',
+      planMonths: 3,
+      creditsCost: 1400,
+      excludedLive: false,
+      excludedVod: false,
+      excludedSeries: false,
+      seriesCategoryIds: '',
+      seriesCategoryCount: 0,
+      maxConnections: 1,
+      currentConnections: 0,
+      status: 'disabled',
+      disabledAt: daysAgo(1),
+      createdAt: daysAgo(40),
+      expiresAt: daysAgo(-50), // 50 days ago → expired too (status disabled takes priority)
     },
   ]
 
   for (const l of lines) {
     await db.subscription.create({ data: { resellerId, ...l } })
+  }
+
+  // Seed connection logs for the active lines (mirrors Xtream UI connection tracker)
+  const activeLines = await db.subscription.findMany({
+    where: { resellerId, status: 'active' },
+  })
+
+  const connSeed: Array<{
+    subscriptionId: string
+    ip: string
+    country: string
+    countryCode: string
+    isp: string
+    device: string
+    userAgent: string
+    connectedAt: Date
+    disconnectedAt: Date | null
+    durationSec: number | null
+  }> = [
+    { subscriptionId: '', ip: '182.185.42.11', country: 'Pakistan', countryCode: 'PK', isp: 'PTCL', device: 'Smart TV', userAgent: 'TiviMate/4.7 (Android)', connectedAt: minsAgo(14), disconnectedAt: null, durationSec: null },
+    { subscriptionId: '', ip: '182.185.42.11', country: 'Pakistan', countryCode: 'PK', isp: 'PTCL', device: 'Smart TV', userAgent: 'TiviMate/4.7 (Android)', connectedAt: minsAgo(60 * 26), disconnectedAt: minsAgo(60 * 24), durationSec: 7200 },
+    { subscriptionId: '', ip: '39.41.88.220', country: 'Pakistan', countryCode: 'PK', isp: 'Jazz', device: 'Android', userAgent: 'IPTV Smarters/5.1', connectedAt: minsAgo(60 * 48), disconnectedAt: minsAgo(60 * 47), durationSec: 3600 },
+    { subscriptionId: '', ip: '203.135.12.9', country: 'Pakistan', countryCode: 'PK', isp: 'WorldCall', device: 'Firestick', userAgent: 'TiviMate/4.6 (Fire OS)', connectedAt: minsAgo(60 * 72), disconnectedAt: minsAgo(60 * 70), durationSec: 7200 },
+    { subscriptionId: '', ip: '94.23.122.18', country: 'France', countryCode: 'FR', isp: 'OVH', device: 'Web', userAgent: 'Mozilla/5.0 (VLC)', connectedAt: minsAgo(60 * 96), disconnectedAt: minsAgo(60 * 95), durationSec: 1800 },
+  ]
+
+  for (const line of activeLines) {
+    // 2-3 connection entries per line, cycling through the seed pool
+    const count = line.username === 'axc_8f2k9p' ? 3 : line.username === 'axc_9b4x2q' ? 2 : 2
+    for (let i = 0; i < count; i++) {
+      const c = connSeed[i % connSeed.length]
+      await db.connection.create({
+        data: { ...c, subscriptionId: line.id },
+      })
+    }
   }
 }

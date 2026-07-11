@@ -85,13 +85,14 @@ model Transaction {
   reference     String?
   status        String       @default("completed") // pending | completed | failed
   fundRequestId String?      @unique
-  subscriptionId String?     @unique
+  subscriptionId String?
   createdAt     DateTime     @default(now())
   reseller      Reseller     @relation(fields: [resellerId], references: [id], onDelete: Cascade)
   fundRequest   FundRequest? @relation(fields: [fundRequestId], references: [id])
   subscription  Subscription? @relation(fields: [subscriptionId], references: [id])
-}
 
+  @@index([subscriptionId])
+}
 // Catalogue of content categories a reseller can include/exclude per line.
 // Top-level types are live | vod | series; detailed rows are mostly series.
 model ContentCategory {
@@ -122,10 +123,34 @@ model Subscription {
   seriesCategoryCount Int   @default(0) // how many series categories selected (0 = all)
   dns              String   @default("http://stariptv.pk:8080")
   status           String   @default("active") // active | expired | disabled
+  maxConnections   Int      @default(1)
+  currentConnections Int    @default(0)
+  lastConnectedAt  DateTime?
+  disabledAt       DateTime?
   expiresAt        DateTime
   createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
   reseller         Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
-  transaction      Transaction?
+  transactions     Transaction[]
+  connections      Connection[]
+}
+
+// Per-line connection log entry — mirrors Xtream UI's active-connections tracker.
+model Connection {
+  id            String   @id @default(cuid())
+  subscriptionId String
+  ip            String
+  country       String?
+  countryCode   String?
+  isp           String?
+  device        String? // e.g. "Smart TV", "Android", "Firestick", "Web"
+  userAgent     String?
+  connectedAt   DateTime @default(now())
+  disconnectedAt DateTime?
+  durationSec   Int?
+  subscription  Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId, connectedAt])
 }
 
 // In-app notifications for the reseller — mirrors the legacy global.js
