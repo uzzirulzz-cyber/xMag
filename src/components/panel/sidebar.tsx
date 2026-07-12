@@ -13,6 +13,7 @@ import {
   LifeBuoy,
   Store,
   Lock,
+  Shield,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -45,6 +46,7 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
     title: 'System',
     items: [
       { label: 'Servers', view: 'servers', icon: Server },
+      { label: 'VPN', view: 'vpn', icon: Shield },
       { label: 'Settings', view: 'settings', icon: Settings },
       { label: 'Support', view: 'support', icon: LifeBuoy },
     ],

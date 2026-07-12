@@ -20,6 +20,7 @@ import { AdminView } from '@/components/panel/admin-view'
 import { LoginScreen } from '@/components/panel/login-screen'
 import { AdUnit } from '@/components/panel/ad-unit'
 import { PlaylistRunner } from '@/components/panel/playlist-runner'
+import { VpnView } from '@/components/panel/vpn-view'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -32,7 +33,7 @@ import type { Overview, PaymentMethod } from '@/components/panel/types'
 type View =
   | 'dashboard' | 'funds' | 'orders'
   | 'live' | 'movies' | 'series' | 'lines'
-  | 'servers' | 'settings' | 'support'
+  | 'servers' | 'vpn' | 'settings' | 'support'
   | 'storefront' | 'admin'
 
 export default function Home() {
@@ -43,7 +44,7 @@ export default function Home() {
     if (typeof window === 'undefined') return 'dashboard'
     const params = new URLSearchParams(window.location.search)
     const v = params.get('view')
-    const valid = ['dashboard','funds','orders','live','movies','series','lines','servers','settings','support','storefront','admin']
+    const valid = ['dashboard','funds','orders','live','movies','series','lines','servers','vpn','settings','support','storefront','admin']
     return (v && valid.includes(v)) ? (v as View) : 'dashboard'
   })
   const [authed, setAuthed] = useState(false)
@@ -95,7 +96,7 @@ export default function Home() {
     const handler = () => {
       const params = new URLSearchParams(window.location.search)
       const v = params.get('view')
-      if (v && ['dashboard','funds','orders','live','movies','series','lines','servers','settings','support','storefront','admin'].includes(v)) {
+      if (v && ['dashboard','funds','orders','live','movies','series','lines','servers','vpn','settings','support','storefront','admin'].includes(v)) {
         setView(v as View)
       }
     }
@@ -233,6 +234,7 @@ export default function Home() {
           )}
 
           {view === 'servers' && <ServersView />}
+          {view === 'vpn' && <VpnView />}
           {view === 'settings' && <SettingsView />}
           {view === 'support' && <SupportView />}
 
