@@ -104,7 +104,29 @@ export function StoreFrontView({ onNavigate }: { onNavigate: (v: string) => void
         <StatTile icon={Film} value="4,200+" label="Movies & VOD" />
       </section>
 
-      {/* Packages showcase */}
+      {/* Best Global featured banner */}
+      <section className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-black to-black p-6 sm:p-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(245,158,11,0.15),transparent_60%)]" />
+        <div className="relative z-10 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg">
+              <Globe className="h-7 w-7" />
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold">Best Global</h2>
+                <Badge className="bg-amber-500 text-black text-[10px] font-bold">FEATURED</Badge>
+              </div>
+              <p className="text-sm text-zinc-400 mt-0.5">Top-rated international channels — BBC, CNN, Sky Sports, Discovery, Disney, Al Jazeera & 5,000+ more</p>
+            </div>
+          </div>
+          <Button onClick={() => onNavigate('live')} className="gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
+            <Play className="h-4 w-4" /> Explore Channels
+          </Button>
+        </div>
+      </section>
+
+      {/* Channel Packages */}
       <section>
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold">Channel Packages</h2>
