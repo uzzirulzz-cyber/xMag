@@ -9,12 +9,13 @@ export const revalidate = 300
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
+    const serverId = searchParams.get('serverId') || undefined
     const categoryId = searchParams.get('categoryId')
     const limit = Math.min(200, Math.max(1, Number(searchParams.get('limit') || '60')))
 
-    const server = await getXtreamServer()
+    const server = await getXtreamServer(serverId)
     const host = server.host.replace(/\/$/, '')
-    const data = (await callXtreamApi('get_live_streams', categoryId ? { category_id: categoryId } : undefined)) as XtreamLiveStream[]
+    const data = (await callXtreamApi('get_live_streams', categoryId ? { category_id: categoryId } : undefined, serverId)) as XtreamLiveStream[]
 
     const streams = (data || [])
       .slice(0, limit)

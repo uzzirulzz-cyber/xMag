@@ -50,13 +50,20 @@ export function WorldPackageDialog({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [playerChannel, setPlayerChannel] = useState<{ name: string; url: string } | null>(null)
+  const [selectedServerId, setSelectedServerId] = useState<string>('')
   const { toast } = useToast()
+
+  // Servers list
+  const { data: serversData } = useQuery<{ servers: { id: string; label: string; host: string }[] }>({
+    queryKey: ['xtream-servers'],
+    queryFn: async () => (await fetch('/api/funds/xtream/servers')).json(),
+  })
 
   // Account info
   const { data: account, isLoading: accountLoading } = useQuery<XtreamAccount>({
-    queryKey: ['xtream-account'],
+    queryKey: ['xtream-account', selectedServerId],
     queryFn: async () => {
-      const res = await fetch('/api/funds/xtream/account')
+      const res = await fetch(`/api/funds/xtream/account${selectedServerId ? `?serverId=${selectedServerId}` : ''}`)
       if (!res.ok) throw new Error('Failed to load account')
       return res.json()
     },
@@ -65,9 +72,9 @@ export function WorldPackageDialog({
 
   // Live categories
   const { data: liveCatsData, isLoading: liveCatsLoading } = useQuery<{ categories: XtreamCategory[]; totalStreams: number }>({
-    queryKey: ['xtream-live-categories'],
+    queryKey: ['xtream-live-categories', selectedServerId],
     queryFn: async () => {
-      const res = await fetch('/api/funds/xtream/live-categories')
+      const res = await fetch(`/api/funds/xtream/live-categories${selectedServerId ? `?serverId=${selectedServerId}` : ''}`)
       if (!res.ok) throw new Error('Failed to load live categories')
       return res.json()
     },
@@ -76,9 +83,9 @@ export function WorldPackageDialog({
 
   // VOD categories
   const { data: vodCatsData, isLoading: vodCatsLoading } = useQuery<{ categories: XtreamCategory[]; totalStreams: number }>({
-    queryKey: ['xtream-vod-categories'],
+    queryKey: ['xtream-vod-categories', selectedServerId],
     queryFn: async () => {
-      const res = await fetch('/api/funds/xtream/vod-categories')
+      const res = await fetch(`/api/funds/xtream/vod-categories${selectedServerId ? `?serverId=${selectedServerId}` : ''}`)
       if (!res.ok) throw new Error('Failed to load VOD categories')
       return res.json()
     },
@@ -94,10 +101,10 @@ export function WorldPackageDialog({
 
   // Streams for selected category
   const { data: streamsData, isLoading: streamsLoading } = useQuery<{ streams: XtreamLiveStream[] | XtreamVodStream[]; total: number; shown: number }>({
-    queryKey: ['xtream-streams', tab, selectedCategory],
+    queryKey: ['xtream-streams', tab, selectedCategory, selectedServerId],
     queryFn: async () => {
       const endpoint = tab === 'live' ? 'live-streams' : 'vod-streams'
-      const res = await fetch(`/api/funds/xtream/${endpoint}?categoryId=${selectedCategory}&limit=60`)
+      const res = await fetch(`/api/funds/xtream/${endpoint}?categoryId=${selectedCategory}&limit=60${selectedServerId ? `&serverId=${selectedServerId}` : ''}`)
       if (!res.ok) throw new Error('Failed to load streams')
       return res.json()
     },
@@ -148,6 +155,30 @@ export function WorldPackageDialog({
         </div>
 
         <div className="flex flex-col h-[calc(92vh-72px)]">
+          {/* Server selector */}
+          {serversData && serversData.servers.length > 1 && (
+            <div className="flex items-center gap-2 border-b border-border px-5 py-2 bg-muted/20">
+              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide shrink-0">Server:</span>
+              <div className="flex gap-1 flex-wrap">
+                {serversData.servers.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => { setSelectedServerId(s.id); setSelectedCategory(null) }}
+                    className={cn(
+                      'rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors',
+                      (selectedServerId === s.id || (!selectedServerId && serversData.servers[0].id === s.id))
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/70',
+                    )}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Account info bar */}
           <div className="border-b border-border px-5 py-3 bg-muted/30">
             {accountLoading ? (

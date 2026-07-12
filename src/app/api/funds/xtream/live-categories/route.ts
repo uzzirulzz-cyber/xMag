@@ -6,9 +6,10 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 600 // cache category list for 10 min
 
 // GET /api/funds/xtream/live-categories — real live categories from the Xtream server
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const data = (await callXtreamApi('get_live_categories')) as XtreamCategory[]
+    const serverId = new URL(request.url).searchParams.get('serverId') || undefined
+    const data = (await callXtreamApi('get_live_categories', undefined, serverId)) as XtreamCategory[]
     const categories = (data || []).map((c) => ({
       id: c.category_id,
       name: c.category_name,

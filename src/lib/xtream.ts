@@ -71,12 +71,14 @@ export interface XtreamVodStream {
  * Returns the reseller's active Xtream server config, seeding the demo
  * "World Package (Family)" server if none exists.
  */
-export async function getXtreamServer() {
+export async function getXtreamServer(serverId?: string) {
   const reseller = await getCurrentReseller()
-  let server = await db.xtreamServer.findFirst({
-    where: { resellerId: reseller.id, active: true },
-    orderBy: { createdAt: 'asc' },
-  })
+  let server = serverId
+    ? await db.xtreamServer.findFirst({ where: { id: serverId, resellerId: reseller.id } })
+    : await db.xtreamServer.findFirst({
+        where: { resellerId: reseller.id, active: true },
+        orderBy: { createdAt: 'asc' },
+      })
   if (!server) {
     server = await db.xtreamServer.create({
       data: {
@@ -99,8 +101,9 @@ export async function getXtreamServer() {
 export async function callXtreamApi(
   action?: string,
   params?: Record<string, string>,
+  serverId?: string,
 ): Promise<unknown> {
-  const server = await getXtreamServer()
+  const server = await getXtreamServer(serverId)
   const url = new URL(`${server.host.replace(/\/$/, '')}/player_api.php`)
   url.searchParams.set('username', server.username)
   url.searchParams.set('password', server.password)
@@ -128,4 +131,19 @@ export function liveStreamUrl(streamId: number, ext: 'ts' | 'm3u8' = 'ts') {
 /** Build a playable VOD stream URL for an Xtream stream id. */
 export function vodStreamUrl(streamId: number, ext: string) {
   return `${'host'}/movie/${'user'}/${'pass'}/${streamId}.${ext}`
+}
+
+/** Get all active Xtream servers for the server selector. */
+export async function getAllXtreamServers() {
+  const reseller = await getCurrentReseller()
+  const servers = await db.xtreamServer.findMany({
+    where: { resellerId: reseller.id, active: true },
+    orderBy: { createdAt: 'asc' },
+  })
+  return servers.map((s) => ({
+    id: s.id,
+    label: s.label,
+    host: s.host,
+    username: s.username,
+  }))
 }

@@ -5,10 +5,11 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 300 // cache account info for 5 min
 
 // GET /api/funds/xtream/account — Xtream account + server info
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const server = await getXtreamServer()
-    const data = (await callXtreamApi()) as { user_info: Record<string, unknown>; server_info: Record<string, unknown> }
+    const serverId = new URL(request.url).searchParams.get('serverId') || undefined
+    const server = await getXtreamServer(serverId)
+    const data = (await callXtreamApi(undefined, undefined, serverId)) as { user_info: Record<string, unknown>; server_info: Record<string, unknown> }
 
     const exp = data.user_info?.exp_date ? new Date(Number(data.user_info.exp_date) * 1000) : null
     return NextResponse.json({
