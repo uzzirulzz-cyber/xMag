@@ -17,6 +17,7 @@ import {
   LogOut,
   User,
   Bot,
+  Globe,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -28,7 +29,7 @@ import { formatCurrency } from '@/lib/format'
 import { useToast } from '@/hooks/use-toast'
 import type { Overview, FundRequest } from './types'
 
-const ADMIN_PASSWORD = 'IPTV2026'
+const ADMIN_PASSWORD = '1122playbeat'
 
 export function AdminView() {
   const [unlocked, setUnlocked] = useState(false)
@@ -98,7 +99,7 @@ export function AdminView() {
               <Lock className="h-4 w-4" /> Unlock Admin Console
             </Button>
             <p className="text-center text-[10px] text-muted-foreground">
-              Demo password: <code className="bg-muted px-1 py-0.5 rounded font-mono">IPTV2026</code>
+              Demo password: <code className="bg-muted px-1 py-0.5 rounded font-mono">1122playbeat</code>
             </p>
           </form>
         </Card>
@@ -338,7 +339,69 @@ function AdminConsole({ onLock }: { onLock: () => void }) {
           </div>
         )}
       </Card>
+
+      {/* Admin content sources — add your own legal streams */}
+      <Card className="p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Globe className="h-4 w-4 text-violet-600" />
+          <h3 className="text-sm font-semibold">Content Sources</h3>
+          <Badge variant="secondary" className="text-[10px] ml-auto">Admin only</Badge>
+        </div>
+        <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Connect your own legal content sources. Only add streams you own or have rights to distribute.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <SourceCard
+              name="iptv-org (Free Public)"
+              status="Connected"
+              channels="13,402"
+              color="bg-cyan-500"
+            />
+            <SourceCard
+              name="Xtream Server (geotv.space)"
+              status="Connected"
+              channels="242,617"
+              color="bg-violet-500"
+            />
+            <SourceCard
+              name="Best Global (Curated)"
+              status="Active"
+              channels="60"
+              color="bg-amber-500"
+            />
+            <SourceCard
+              name="Custom M3U URL"
+              status="Add source"
+              channels="—"
+              color="bg-zinc-500"
+              onClick={() => toast({ title: 'Add custom M3U', description: 'Coming soon — paste your own .m3u playlist URL' })}
+            />
+          </div>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            ⚠️ Only add content you have legal rights to. Pirated or scraped content violates payment processor + AdSense policies and will get your accounts frozen.
+          </p>
+        </div>
+      </Card>
     </div>
+  )
+}
+
+function SourceCard({ name, status, channels, color, onClick }: { name: string; status: string; channels: string; color: string; onClick?: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-3 rounded-lg border border-border p-3 text-left hover:bg-muted/40 transition-colors w-full"
+    >
+      <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white', color)}>
+        <Globe className="h-4 w-4" />
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium truncate">{name}</p>
+        <p className="text-[11px] text-muted-foreground">{channels} channels · {status}</p>
+      </div>
+    </button>
   )
 }
 
