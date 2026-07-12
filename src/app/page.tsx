@@ -18,6 +18,7 @@ import { PaymentAutomationPanel } from '@/components/panel/payment-automation-pa
 import { StoreFrontView } from '@/components/panel/storefront-view'
 import { AdminView } from '@/components/panel/admin-view'
 import { LoginScreen } from '@/components/panel/login-screen'
+import { AdUnit } from '@/components/panel/ad-unit'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -121,7 +122,12 @@ export default function Home() {
         />
 
         <main className="flex-1 px-4 sm:px-6 py-6 space-y-6">
-          {view === 'dashboard' && <DashboardView onNavigate={navigate} />}
+          {view === 'dashboard' && (
+            <>
+              <DashboardView onNavigate={navigate} />
+              <AdUnit className="min-h-[90px] rounded-xl" />
+            </>
+          )}
 
           {view === 'funds' && (
             <>
@@ -146,6 +152,7 @@ export default function Home() {
                 <QuickTips />
               </div>
               <TransactionHistory currency={overview?.currency} />
+              <AdUnit className="min-h-[90px] rounded-xl" />
             </>
           )}
 

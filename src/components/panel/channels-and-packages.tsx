@@ -21,6 +21,7 @@ import {
   Inbox,
   Lock,
   ShieldAlert,
+  Shuffle,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -265,10 +266,24 @@ export function ChannelsAndPackages({ forceType }: { forceType?: string }) {
               </p>
             </div>
           </div>
-          <Badge variant="secondary" className="gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            {formatNumber(stats?.totalViewers ?? 0)} watching
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 h-8"
+              onClick={() => {
+                if (channels.length === 0) return
+                const random = channels[Math.floor(Math.random() * channels.length)]
+                setPlayerChannel({ name: random.name, url: random.streamUrl, category: random.category, viewers: random.currentViewers })
+              }}
+            >
+              <Shuffle className="h-3.5 w-3.5" /> Shuffle Play
+            </Button>
+            <Badge variant="secondary" className="gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              {formatNumber(stats?.totalViewers ?? 0)} watching
+            </Badge>
+          </div>
         </div>
 
         {/* Filters */}

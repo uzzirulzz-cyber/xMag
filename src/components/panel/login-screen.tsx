@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Lock, User, Eye, EyeOff, Loader2, ShieldCheck, ArrowRight } from 'lucide-react'
+import { Lock, User, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -111,13 +111,22 @@ export function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
               )}
             </Button>
 
-            <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground flex gap-2">
-              <ShieldCheck className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-              <div>
-                <p className="font-medium text-foreground">Demo credentials</p>
-                <p className="mt-0.5">Username: <code className="font-mono bg-muted px-1 rounded">starreseller</code></p>
-                <p>Password: <code className="font-mono bg-muted px-1 rounded">magx2026</code></p>
-              </div>
+            {/* Social login */}
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+              <div className="relative flex justify-center text-xs"><span className="bg-card px-2 text-muted-foreground">or continue with</span></div>
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              <SocialBtn label="Google" onClick={() => toast({ title: 'Google OAuth', description: 'Configure GOOGLE_CLIENT_ID in .env to enable' })} />
+              <SocialBtn label="Facebook" onClick={() => toast({ title: 'Facebook OAuth', description: 'Configure FACEBOOK_CLIENT_ID in .env to enable' })} />
+              <SocialBtn label="X" onClick={() => toast({ title: 'X (Twitter) OAuth', description: 'Configure X_CLIENT_ID in .env to enable' })} />
+              <SocialBtn label="TikTok" onClick={() => toast({ title: 'TikTok OAuth', description: 'Configure TIKTOK_CLIENT_ID in .env to enable' })} />
+            </div>
+
+            <div className="text-center text-xs">
+              <button type="button" className="text-primary hover:underline" onClick={() => toast({ title: 'PayPal signup', description: 'Configure PAYPAL_CLIENT_ID in .env to enable' })}>
+                Sign up with PayPal
+              </button>
             </div>
           </form>
         </Card>
@@ -127,5 +136,17 @@ export function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
         </p>
       </div>
     </div>
+  )
+}
+
+function SocialBtn({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex h-10 items-center justify-center rounded-lg border border-border bg-muted/30 text-xs font-medium hover:bg-muted transition-colors"
+    >
+      {label}
+    </button>
   )
 }

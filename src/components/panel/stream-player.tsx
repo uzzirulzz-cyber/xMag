@@ -156,21 +156,19 @@ export function StreamPlayer({
           )}
         </div>
 
-        {/* Footer — URL bar */}
-        <div className="px-5 py-3 border-t border-border bg-muted/30">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide shrink-0">Stream URL</span>
-            <code className="flex-1 text-[11px] font-mono text-muted-foreground truncate">{url}</code>
-            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0" onClick={copyUrl} aria-label="Copy URL">
+        {/* Footer — minimal, URL hidden by default */}
+        <div className="px-5 py-2.5 border-t border-border bg-muted/30 flex items-center justify-between">
+          <DialogDescription className="text-[10px]">
+            {status === 'playing' ? 'Now streaming' : status === 'error' ? 'Playback error — try VLC' : 'Loading…'}
+          </DialogDescription>
+          <div className="flex items-center gap-1">
+            <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={copyUrl} aria-label="Copy URL">
               <Copy className="h-3 w-3" />
             </Button>
-            <Button size="sm" variant="ghost" className="h-6 px-2 shrink-0 gap-1 text-[11px]" onClick={() => window.open(url, '_blank')}>
-              <ExternalLink className="h-3 w-3" /> Open
+            <Button size="sm" variant="ghost" className="h-6 px-2 gap-1 text-[11px]" onClick={() => window.open(url, '_blank')}>
+              <ExternalLink className="h-3 w-3" /> VLC
             </Button>
           </div>
-          <DialogDescription className="text-[10px] mt-1.5">
-            If the stream doesn&apos;t play in-browser, copy the URL into VLC Media Player or IPTV Smarters.
-          </DialogDescription>
         </div>
       </DialogContent>
     </Dialog>
