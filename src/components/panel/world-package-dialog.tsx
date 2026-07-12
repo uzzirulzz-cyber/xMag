@@ -31,6 +31,7 @@ import {
 import { cn } from '@/lib/utils'
 import { formatNumber } from '@/lib/format'
 import { useToast } from '@/hooks/use-toast'
+import { StreamPlayer } from './stream-player'
 import type {
   XtreamAccount,
   XtreamCategory,
@@ -48,6 +49,7 @@ export function WorldPackageDialog({
   const [tab, setTab] = useState<'live' | 'vod'>('live')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [search, setSearch] = useState('')
+  const [playerChannel, setPlayerChannel] = useState<{ name: string; url: string } | null>(null)
   const { toast } = useToast()
 
   // Account info
@@ -288,7 +290,7 @@ export function WorldPackageDialog({
                   const isLive = tab === 'live'
                   const name = s.name
                   const icon = s.icon
-                  const playUrl = isLive ? (s as XtreamLiveStream).playUrlTs : (s as XtreamVodStream).playUrl
+                  const playUrl = isLive ? (s as XtreamLiveStream).playUrlM3u8 : (s as XtreamVodStream).playUrl
                   const rating = !isLive ? (s as XtreamVodStream).rating : 0
                   return (
                     <div
@@ -323,11 +325,17 @@ export function WorldPackageDialog({
                           size="sm"
                           variant="outline"
                           className="h-7 flex-1 gap-1 text-[11px]"
-                          onClick={() => {
-                            window.open(playUrl, '_blank')
-                          }}
+                          onClick={() => setPlayerChannel({ name, url: playUrl })}
                         >
                           <Play className="h-3 w-3" /> Play
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 gap-1 text-[11px] text-primary"
+                          onClick={() => window.open(playUrl, '_blank')}
+                        >
+                          <ExternalLink className="h-3 w-3" /> VLC
                         </Button>
                         <Button
                           size="sm"
@@ -347,6 +355,12 @@ export function WorldPackageDialog({
           </div>
         </div>
       </DialogContent>
+      <StreamPlayer
+        open={!!playerChannel}
+        onOpenChange={(v) => !v && setPlayerChannel(null)}
+        name={playerChannel?.name ?? ''}
+        url={playerChannel?.url ?? ''}
+      />
     </Dialog>
   )
 }

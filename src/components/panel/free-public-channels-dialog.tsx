@@ -25,9 +25,9 @@ import {
 import { cn } from '@/lib/utils'
 import { formatNumber } from '@/lib/format'
 import { useToast } from '@/hooks/use-toast'
+import { StreamPlayer } from './stream-player'
 
 export type PlaylistKey = 'all' | 'pk' | 'in' | 'uk' | 'us' | 'sports' | 'news' | 'movies'
-
 export interface PublicChannel {
   name: string
   logo: string | null
@@ -58,6 +58,7 @@ export function FreePublicChannelsDialog({
   const [group, setGroup] = useState<string>('all')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [playerChannel, setPlayerChannel] = useState<{ name: string; url: string } | null>(null)
   const { toast } = useToast()
 
   // Groups for current playlist
@@ -246,7 +247,7 @@ export function FreePublicChannelsDialog({
                           size="sm"
                           variant="outline"
                           className="h-7 flex-1 gap-1 text-[11px]"
-                          onClick={() => window.open(c.url, '_blank')}
+                          onClick={() => setPlayerChannel({ name: c.name, url: c.url })}
                         >
                           <Play className="h-3 w-3" /> Play
                         </Button>
@@ -283,6 +284,12 @@ export function FreePublicChannelsDialog({
           </div>
         </div>
       </DialogContent>
+      <StreamPlayer
+        open={!!playerChannel}
+        onOpenChange={(v) => !v && setPlayerChannel(null)}
+        name={playerChannel?.name ?? ''}
+        url={playerChannel?.url ?? ''}
+      />
     </Dialog>
   )
 }
