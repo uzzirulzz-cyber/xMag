@@ -45,6 +45,7 @@ import { formatNumber } from '@/lib/format'
 import { useToast } from '@/hooks/use-toast'
 import type { Channel, ChannelPackage, ChannelStats } from './types'
 import { WorldPackageDialog } from './world-package-dialog'
+import { FreePublicChannelsDialog } from './free-public-channels-dialog'
 
 const TYPE_ICON: Record<string, React.ElementType> = {
   live: Radio,
@@ -73,6 +74,7 @@ export function ChannelsAndPackages({ forceType }: { forceType?: string }) {
   const [adultUnlocked, setAdultUnlocked] = useState(false)
   const [pinDialogOpen, setPinDialogOpen] = useState(false)
   const [worldOpen, setWorldOpen] = useState(false)
+  const [freePublicOpen, setFreePublicOpen] = useState(false)
   const { toast } = useToast()
 
   // Stats
@@ -196,6 +198,26 @@ export function ChannelsAndPackages({ forceType }: { forceType?: string }) {
             </div>
             <div className="flex items-center gap-1 text-[10px] text-violet-600 dark:text-violet-400 font-medium">
               <Globe className="h-2.5 w-2.5" /> Real server
+            </div>
+          </button>
+          {/* Free Public Channels — iptv-org */}
+          <button
+            type="button"
+            onClick={() => setFreePublicOpen(true)}
+            className="group relative flex flex-col items-start gap-2 rounded-xl border border-cyan-400/60 bg-gradient-to-br from-cyan-500/10 to-sky-500/10 p-3 text-left transition-all hover:border-cyan-500 hover:shadow-md"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-600 to-sky-600 text-white shadow-sm">
+              <Globe className="h-[18px] w-[18px]" />
+            </span>
+            <div className="min-w-0 w-full">
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs font-semibold leading-tight truncate">Free Public</p>
+                <Badge className="shrink-0 h-4 px-1 text-[8px] font-bold bg-cyan-600 text-white">FREE</Badge>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-0.5">13,402 channels · iptv-org</p>
+            </div>
+            <div className="flex items-center gap-1 text-[10px] text-cyan-600 dark:text-cyan-400 font-medium">
+              <Globe className="h-2.5 w-2.5" /> Legal &amp; public
             </div>
           </button>
           {packages.map((p) => {
@@ -403,6 +425,9 @@ export function ChannelsAndPackages({ forceType }: { forceType?: string }) {
 
       {/* World Package (Family) — real Xtream server browser */}
       <WorldPackageDialog open={worldOpen} onOpenChange={setWorldOpen} />
+
+      {/* Free Public Channels — iptv-org browser */}
+      <FreePublicChannelsDialog open={freePublicOpen} onOpenChange={setFreePublicOpen} />
     </div>
   )
 }
