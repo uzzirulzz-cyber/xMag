@@ -30,6 +30,7 @@ model Reseller {
   notifications Notification[]
   xtreamServers XtreamServer[]
   botConfigs    BotConfig[]
+  botRunLogs    BotRunLog[]
 }
 
 // Supported funding channels: mobile wallets, bank transfer, crypto, card
@@ -248,4 +249,23 @@ model BotConfig {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   reseller        Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
+}
+
+// Log entry for each payment-bot run — tracks what the auto-credit bot did.
+model BotRunLog {
+  id            String   @id @default(cuid()) @map("_id")
+  resellerId    String
+  runType       String   // scheduled | manual | auto-repair
+  processed     Int      @default(0)  // requests evaluated
+  credited      Int      @default(0)  // requests auto-credited
+  rejected      Int      @default(0)  // requests auto-rejected
+  amountCredited Float   @default(0)  // PKR credited this run
+  repaired      Int      @default(0)  // stuck requests repaired
+  errors        Int      @default(0)
+  durationMs    Int      @default(0)
+  success       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  reseller      Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
+
+  @@index([resellerId, createdAt])
 }

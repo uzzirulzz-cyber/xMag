@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Lock,
@@ -16,6 +16,7 @@ import {
   EyeOff,
   LogOut,
   User,
+  Bot,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -111,6 +112,7 @@ export function AdminView() {
 function AdminConsole({ onLock }: { onLock: () => void }) {
   const qc = useQueryClient()
   const { toast } = useToast()
+  const [autoRun, setAutoRun] = useState(true)
 
   const { data: overview } = useQuery<Overview>({
     queryKey: ['overview'],
@@ -120,6 +122,34 @@ function AdminConsole({ onLock }: { onLock: () => void }) {
     queryKey: ['requests', 'admin'],
     queryFn: async () => (await fetch('/api/funds/requests')).json(),
   })
+  const { data: botStats } = useQuery({
+    queryKey: ['bot-stats'],
+    queryFn: async () => (await fetch('/api/funds/bot-stats')).json(),
+    refetchInterval: 15_000,
+  })
+
+  // Auto-run scheduler: every 60s, trigger the bot automatically
+  useEffect(() => {
+    if (!autoRun) return
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/funds/bot-run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ runType: 'scheduled' }),
+        })
+        const d = await res.json()
+        if (d.ran && d.count > 0) {
+          toast({ title: '🤖 Auto-run credited', description: `${d.count} request(s) · ${formatCurrency(d.credited)}` })
+          qc.invalidateQueries({ queryKey: ['overview'] })
+          qc.invalidateQueries({ queryKey: ['requests'] })
+          qc.invalidateQueries({ queryKey: ['bot-stats'] })
+          qc.invalidateQueries({ queryKey: ['transactions'] })
+        }
+      } catch { /* ignore poll errors */ }
+    }, 60_000)
+    return () => clearInterval(interval)
+  }, [autoRun, qc, toast])
 
   const reviewMut = useMutation({
     mutationFn: async ({ id, decision }: { id: string; decision: 'approve' | 'reject' }) => {
@@ -179,6 +209,59 @@ function AdminConsole({ onLock }: { onLock: () => void }) {
         <AdminKpi icon={Clock} label="Pending Requests" value={String(pending.length)} color="text-amber-600" />
         <AdminKpi icon={Wallet} label="Pending Amount" value={overview ? formatCurrency(overview.pendingAmount) : '—'} color="text-amber-600" />
       </div>
+
+      {/* Automation stats — auto-repair / auto-obtain bot */}
+      <Card className="relative overflow-hidden p-5 bg-gradient-to-br from-emerald-600/5 via-card to-card border-emerald-400/20">
+        <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+          <div className="flex items-center gap-2.5">
+            <span className={cn('relative flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600', autoRun && 'ring-2 ring-emerald-500/20')}>
+              <Bot className="h-5 w-5" />
+              {autoRun && <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" /></span>}
+            </span>
+            <div>
+              <h3 className="text-sm font-semibold">Automation Engine</h3>
+              <p className="text-xs text-muted-foreground">Auto-repair · auto-obtain · auto-credit · runs every 60s</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge className={cn('text-[10px]', autoRun ? 'bg-emerald-500 text-white' : 'bg-muted text-muted-foreground')}>
+              {autoRun ? 'ACTIVE' : 'PAUSED'}
+            </Badge>
+            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setAutoRun((v) => !v)}>
+              {autoRun ? 'Pause' : 'Resume'}
+            </Button>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <BotStat label="Total Runs" value={botStats ? String(botStats.totalRuns) : '—'} />
+          <BotStat label="Auto-Credited" value={botStats ? formatCurrency(botStats.totalCredited) : '—'} accent />
+          <BotStat label="Auto-Repaired" value={botStats ? String(botStats.totalRepaired) : '—'} />
+          <BotStat label="Errors" value={botStats ? String(botStats.totalErrors) : '—'} />
+          <BotStat label="Success Rate" value={botStats ? `${botStats.successRate}%` : '—'} accent />
+        </div>
+        {/* Last 10 runs */}
+        {botStats?.last10 && botStats.last10.length > 0 && (
+          <div className="mt-4">
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Last 10 Bot Runs</p>
+            <div className="space-y-1 max-h-40 overflow-y-auto scrollbar-thin">
+              {botStats.last10.map((run: BotRun) => (
+                <div key={run.id} className="flex items-center gap-3 rounded-md bg-muted/30 px-3 py-1.5 text-xs">
+                  <span className={cn('flex h-5 w-5 items-center justify-center rounded-full shrink-0', run.success ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600')}>
+                    {run.success ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                  </span>
+                  <span className="text-muted-foreground capitalize shrink-0">{run.runType}</span>
+                  <span className="text-muted-foreground shrink-0">{new Date(run.createdAt).toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span className="flex-1 truncate">
+                    {run.credited > 0 ? <span className="text-emerald-600 font-medium">+{formatCurrency(run.amountCredited)} ({run.credited})</span> : <span className="text-muted-foreground">No credits</span>}
+                    {run.repaired > 0 && <span className="text-amber-600 ml-2">🔧 {run.repaired} repaired</span>}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground tabular-nums shrink-0">{run.durationMs}ms</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </Card>
 
       {/* Pending fund requests */}
       <Card className="overflow-hidden">
@@ -266,6 +349,27 @@ function AdminKpi({ icon: Icon, label, value, color }: { icon: React.ElementType
       <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</p>
       <p className="text-lg font-bold tabular-nums">{value}</p>
     </Card>
+  )
+}
+
+interface BotRun {
+  id: string
+  runType: string
+  processed: number
+  credited: number
+  repaired: number
+  amountCredited: number
+  durationMs: number
+  success: boolean
+  createdAt: string
+}
+
+function BotStat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="rounded-lg bg-muted/30 p-3">
+      <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</p>
+      <p className={cn('text-sm font-bold tabular-nums mt-0.5', accent && 'text-emerald-600')}>{value}</p>
+    </div>
   )
 }
 
