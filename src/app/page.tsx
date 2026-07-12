@@ -15,6 +15,8 @@ import { DashboardView } from '@/components/panel/dashboard-view'
 import { OrdersView, ServersView, SettingsView, SupportView } from '@/components/panel/system-views'
 import { LiveStreamsView, MoviesView, SeriesView } from '@/components/panel/content-views'
 import { PaymentAutomationPanel } from '@/components/panel/payment-automation-panel'
+import { StoreFrontView } from '@/components/panel/storefront-view'
+import { AdminView } from '@/components/panel/admin-view'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -28,12 +30,13 @@ type View =
   | 'dashboard' | 'funds' | 'orders'
   | 'live' | 'movies' | 'series' | 'lines'
   | 'servers' | 'settings' | 'support'
+  | 'storefront' | 'admin'
 
 export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  const [isDark, setIsDark] = useState(false)
+  const [isDark, setIsDark] = useState(true) // MaGx World Super IPTV — black UI theme by default
   const [subDialogOpen, setSubDialogOpen] = useState(false)
-  const [view, setView] = useState<View>('funds')
+  const [view, setView] = useState<View>('dashboard')
 
   useEffect(() => {
     const root = document.documentElement
@@ -141,6 +144,10 @@ export default function Home() {
           {view === 'servers' && <ServersView />}
           {view === 'settings' && <SettingsView />}
           {view === 'support' && <SupportView />}
+
+          {view === 'storefront' && <StoreFrontView onNavigate={navigate} />}
+
+          {view === 'admin' && <AdminView />}
         </main>
 
         <Footer />

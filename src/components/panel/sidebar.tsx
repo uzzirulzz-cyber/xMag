@@ -11,6 +11,8 @@ import {
   Server,
   Settings,
   LifeBuoy,
+  Store,
+  Lock,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -45,6 +47,13 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
       { label: 'Servers', view: 'servers', icon: Server },
       { label: 'Settings', view: 'settings', icon: Settings },
       { label: 'Support', view: 'support', icon: LifeBuoy },
+    ],
+  },
+  {
+    title: 'Portal',
+    items: [
+      { label: 'Store Front', view: 'storefront', icon: Store },
+      { label: 'Admin', view: 'admin', icon: Lock },
     ],
   },
 ]
