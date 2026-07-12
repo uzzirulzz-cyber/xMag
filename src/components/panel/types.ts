@@ -188,6 +188,57 @@ export interface ChannelStats {
   byType: Array<{ type: string; viewers: number; channels: number }>
 }
 
+export interface XtreamAccount {
+  server: { label: string; host: string; appUrl: string }
+  userInfo: {
+    username: string
+    status: string
+    expDate: string | null
+    isTrial: boolean
+    activeConnections: number
+    maxConnections: number
+    createdAt: string | null
+  }
+  serverInfo: {
+    panel: string
+    version: string
+    url: string
+    port: string
+    timezone: string
+    timeNow: string
+  }
+}
+
+export interface XtreamCategory {
+  id: string
+  name: string
+  icon: string | null
+  streamCount: number
+  isAdult: boolean
+}
+
+export interface XtreamLiveStream {
+  id: number
+  name: string
+  icon: string
+  categoryId: string
+  isAdult: boolean
+  epgChannelId: string | null
+  playUrlTs: string
+  playUrlM3u8: string
+}
+
+export interface XtreamVodStream {
+  id: number
+  name: string
+  icon: string
+  categoryId: string
+  rating: number
+  containerExtension: string
+  isAdult: boolean
+  playUrl: string
+}
+
 export type NotificationType = 'info' | 'success' | 'warning' | 'fund' | 'subscription' | 'system'
 
 export interface AppNotification {

@@ -71,6 +71,10 @@ export async function ensureSeed() {
   const { ensureNotifications } = await import('@/lib/notifications')
   await ensureNotifications()
 
+  // Seed the Xtream server config for the World Package (Family)
+  const { getXtreamServer } = await import('@/lib/xtream')
+  await getXtreamServer()
+
   return reseller
 }
 

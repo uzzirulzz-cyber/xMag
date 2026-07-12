@@ -28,6 +28,7 @@ model Reseller {
   fundRequests FundRequest[]
   subscriptions Subscription[]
   notifications Notification[]
+  xtreamServers XtreamServer[]
 }
 
 // Supported funding channels: mobile wallets, bank transfer, crypto, card
@@ -211,4 +212,18 @@ model Notification {
   reseller    Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
 
   @@index([resellerId, read, createdAt])
+}
+
+// A real Xtream Codes server the reseller is subscribed to. The World Package
+// pulls live channels + VODs from this server via its player_api.php endpoint.
+model XtreamServer {
+  id          String   @id @default(cuid())
+  resellerId  String
+  label       String   // "World Package (Family)"
+  host        String   // http://geotv.space:8880
+  username    String   // 3ea77da2
+  password    String   // 5bb13ec3
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  reseller    Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
 }

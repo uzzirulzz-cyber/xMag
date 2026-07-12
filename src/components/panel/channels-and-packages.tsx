@@ -44,6 +44,7 @@ import { cn } from '@/lib/utils'
 import { formatNumber } from '@/lib/format'
 import { useToast } from '@/hooks/use-toast'
 import type { Channel, ChannelPackage, ChannelStats } from './types'
+import { WorldPackageDialog } from './world-package-dialog'
 
 const TYPE_ICON: Record<string, React.ElementType> = {
   live: Radio,
@@ -71,6 +72,7 @@ export function ChannelsAndPackages() {
   const [page, setPage] = useState(1)
   const [adultUnlocked, setAdultUnlocked] = useState(false)
   const [pinDialogOpen, setPinDialogOpen] = useState(false)
+  const [worldOpen, setWorldOpen] = useState(false)
   const { toast } = useToast()
 
   // Stats
@@ -176,6 +178,26 @@ export function ChannelsAndPackages() {
             active={selectedPackage === 'all'}
             onClick={() => { setSelectedPackage('all'); setPage(1) }}
           />
+          {/* World Package (Family) — real Xtream server */}
+          <button
+            type="button"
+            onClick={() => setWorldOpen(true)}
+            className="group relative flex flex-col items-start gap-2 rounded-xl border border-violet-400/60 bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 p-3 text-left transition-all hover:border-violet-500 hover:shadow-md"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-sm">
+              <Globe className="h-[18px] w-[18px]" />
+            </span>
+            <div className="min-w-0 w-full">
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs font-semibold leading-tight truncate">World Package</p>
+                <Badge className="shrink-0 h-4 px-1 text-[8px] font-bold bg-violet-600 text-white">LIVE</Badge>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Family · 242K+ streams</p>
+            </div>
+            <div className="flex items-center gap-1 text-[10px] text-violet-600 dark:text-violet-400 font-medium">
+              <Globe className="h-2.5 w-2.5" /> Real server
+            </div>
+          </button>
           {packages.map((p) => {
             const Icon = TYPE_ICON[p.type] || Tv
             const locked = p.pinProtected && !adultUnlocked
@@ -378,6 +400,9 @@ export function ChannelsAndPackages() {
           toast({ title: 'Adult content unlocked', description: 'PIN accepted. Adult channels are now visible.' })
         }}
       />
+
+      {/* World Package (Family) — real Xtream server browser */}
+      <WorldPackageDialog open={worldOpen} onOpenChange={setWorldOpen} />
     </div>
   )
 }
