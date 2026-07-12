@@ -22,7 +22,7 @@ declare global {
 
 export function AdUnit({
   client = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || '',
-  slot = process.env.NEXT_PUBLIC_ADSENSE_SLOT || '',
+  slot = process.env.NEXT_PUBLIC_ADSENSE_SLOT || '0000000000',
   format = 'auto',
   className = '',
 }: {
@@ -34,7 +34,7 @@ export function AdUnit({
   const insRef = useRef<HTMLModElement>(null)
 
   useEffect(() => {
-    if (!client || !slot) return
+    if (!client) return
     try {
       ;(window.adsbygoogle = window.adsbygoogle || []).push({})
     } catch {
@@ -42,7 +42,7 @@ export function AdUnit({
     }
   }, [client, slot])
 
-  if (!client || !slot) {
+  if (!client) {
     // No AdSense configured — don't render a fake placeholder
     return null
   }
