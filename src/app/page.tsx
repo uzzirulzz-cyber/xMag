@@ -19,6 +19,7 @@ import { StoreFrontView } from '@/components/panel/storefront-view'
 import { AdminView } from '@/components/panel/admin-view'
 import { LoginScreen } from '@/components/panel/login-screen'
 import { AdUnit } from '@/components/panel/ad-unit'
+import { PlaylistRunner } from '@/components/panel/playlist-runner'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -193,6 +194,7 @@ export default function Home() {
               <BalanceCards overview={overview} loading={overviewLoading} />
               <MySubscriptions onNew={() => setSubDialogOpen(true)} balance={overview?.balance ?? 0} />
               <PaymentAutomationPanel />
+              <PlaylistRunner variant="user" />
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 <div className="xl:col-span-2">
                   <AddFunds methods={methodsData?.methods ?? []} loading={methodsLoading} />

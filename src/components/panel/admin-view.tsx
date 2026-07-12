@@ -31,6 +31,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/format'
 import { useToast } from '@/hooks/use-toast'
+import { PlaylistRunner } from './playlist-runner'
 import type { Overview, FundRequest } from './types'
 
 const ADMIN_PASSWORD = '1122playbeat'
@@ -390,6 +391,9 @@ function AdminConsole({ onLock }: { onLock: () => void }) {
 
       {/* Playlist uploader — admin only */}
       <PlaylistUploader />
+
+      {/* Playlist Runner — batch import multiple M3U playlists */}
+      <PlaylistRunner variant="admin" />
 
       {/* Player apps — download official IPTV players */}
       <Card className="p-5">
