@@ -44,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Real Google AdSense — activates when NEXT_PUBLIC_ADSENSE_CLIENT is set */}
+        {/* Real Google AdSense — standard script */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT && (
           <script
             async
@@ -52,10 +52,23 @@ export default function RootLayout({
             crossOrigin="anonymous"
           />
         )}
+        {/* AMP auto-ads — serves ads automatically across the page */}
+        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT && (
+          <script
+            async
+            custom-element="amp-auto-ads"
+            src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"
+          />
+        )}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
+        {/* AMP auto-ads element — Google places ads automatically */}
+        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT && (
+          // @ts-expect-error amp-auto-ads is a custom element
+          <amp-auto-ads type="adsense" data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT} />
+        )}
         <Providers>
           {children}
         </Providers>
