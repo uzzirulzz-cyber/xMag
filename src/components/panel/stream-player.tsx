@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Hls from 'hls.js'
 import {
   Dialog,
   DialogContent,
@@ -12,6 +11,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Copy, X, Loader2, AlertCircle, ExternalLink, Eye } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+
+
 
 export function StreamPlayer({
   open,
@@ -29,65 +30,75 @@ export function StreamPlayer({
   viewers?: number
 }) {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const hlsRef = useRef<Hls | null>(null)
   const [status, setStatus] = useState<'loading' | 'playing' | 'error'>('loading')
   const [errorMsg, setErrorMsg] = useState('')
   const { toast } = useToast()
 
   useEffect(() => {
-    if (!open || !url || !videoRef.current) return
+    if (!open || !url) return
 
-    const video = videoRef.current
+    let hls: { destroy: () => void } | null = null
 
-    // Clean up previous instance
-    if (hlsRef.current) {
-      hlsRef.current.destroy()
-      hlsRef.current = null
-    }
+    // Small delay to let the Dialog portal mount the video element
+    const timer = setTimeout(async () => {
+      const video = videoRef.current
+      if (!video) return
 
-    const isM3u8 = url.includes('.m3u8') || url.includes('playlist.m3u')
+      const isM3u8 = url.includes('.m3u8') || url.includes('playlist.m3u')
+      // Route through server proxy to bypass CORS restrictions
+      const proxyUrl = `/api/stream?url=${encodeURIComponent(url)}`
 
-    if (isM3u8 && Hls.isSupported()) {
-      // Use hls.js for browsers that don't support HLS natively (Chrome, Firefox, Edge)
-      const hls = new Hls({ enableWorker: true, lowLatencyMode: true })
-      hlsRef.current = hls
-      hls.loadSource(url)
-      hls.attachMedia(video)
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().then(() => setStatus('playing')).catch(() => setStatus('playing'))
-      })
-      hls.on(Hls.Events.ERROR, (_e, data) => {
-        if (data.fatal) {
+      if (isM3u8) {
+        // Load hls.js from CDN
+        const Hls = await loadHlsFromCDN()
+        if (Hls) {
+          if (Hls.isSupported()) {
+            hls = new Hls({ enableWorker: true, lowLatencyMode: true })
+            hls.loadSource(proxyUrl)
+            hls.attachMedia(video)
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+              video.play().then(() => setStatus('playing')).catch(() => setStatus('playing'))
+            })
+            hls.on(Hls.Events.ERROR, (_e: unknown, data: { fatal: boolean; details: string }) => {
+              if (data.fatal) {
+                setStatus('error')
+                setErrorMsg(data.details || 'Stream failed to load')
+              }
+            })
+          } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = proxyUrl
+            video.addEventListener('loadedmetadata', () => {
+              video.play().then(() => setStatus('playing')).catch(() => setStatus('playing'))
+            })
+          } else {
+            setStatus('error')
+            setErrorMsg('HLS not supported in this browser')
+          }
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          video.src = proxyUrl
+          video.addEventListener('loadedmetadata', () => {
+            video.play().then(() => setStatus('playing')).catch(() => setStatus('playing'))
+          })
+        } else {
           setStatus('error')
-          setErrorMsg(data.details || 'Stream failed to load')
+          setErrorMsg('Could not load HLS player. Try opening in VLC.')
         }
-      })
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Safari supports HLS natively
-      video.src = url
-      video.addEventListener('loadedmetadata', () => {
-        video.play().then(() => setStatus('playing')).catch(() => setStatus('playing'))
-      })
-      video.addEventListener('error', () => {
-        setStatus('error')
-        setErrorMsg('Stream failed to load')
-      })
-    } else {
-      // Non-HLS URL or unsupported — try direct playback
-      video.src = url
-      video.play().then(() => setStatus('playing')).catch(() => {
-        setStatus('error')
-        setErrorMsg('This stream format may not be playable in-browser. Try opening in VLC.')
-      })
-    }
+      } else {
+        video.src = proxyUrl
+        video.play().then(() => setStatus('playing')).catch(() => {
+          setStatus('error')
+          setErrorMsg('This stream format may not be playable in-browser. Try VLC.')
+        })
+      }
+    }, 200)
 
     return () => {
-      if (hlsRef.current) {
-        hlsRef.current.destroy()
-        hlsRef.current = null
+      clearTimeout(timer)
+      if (hls) hls.destroy()
+      if (videoRef.current) {
+        videoRef.current.removeAttribute('src')
+        videoRef.current.load()
       }
-      video.removeAttribute('src')
-      video.load()
     }
   }, [open, url])
 
@@ -173,4 +184,20 @@ export function StreamPlayer({
       </DialogContent>
     </Dialog>
   )
+}
+
+// Load hls.js from CDN — most reliable across bundlers/SSR
+function loadHlsFromCDN(): Promise<unknown> {
+  return new Promise((resolve) => {
+    // Already loaded
+    const w = window as Record<string, unknown>
+    if (w.Hls) return resolve(w.Hls)
+
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.4.12/dist/hls.min.js'
+    script.async = true
+    script.onload = () => resolve(w.Hls || null)
+    script.onerror = () => resolve(null)
+    document.head.appendChild(script)
+  })
 }
