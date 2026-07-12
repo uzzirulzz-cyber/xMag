@@ -17,6 +17,7 @@ import { LiveStreamsView, MoviesView, SeriesView } from '@/components/panel/cont
 import { PaymentAutomationPanel } from '@/components/panel/payment-automation-panel'
 import { StoreFrontView } from '@/components/panel/storefront-view'
 import { AdminView } from '@/components/panel/admin-view'
+import { LoginScreen } from '@/components/panel/login-screen'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -37,6 +38,8 @@ export default function Home() {
   const [isDark, setIsDark] = useState(true) // MaGx World Super IPTV — black UI theme by default
   const [subDialogOpen, setSubDialogOpen] = useState(false)
   const [view, setView] = useState<View>('dashboard')
+  const [authed, setAuthed] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
 
   useEffect(() => {
     const root = document.documentElement
@@ -44,9 +47,20 @@ export default function Home() {
     else root.classList.remove('dark')
   }, [isDark])
 
+  // Check existing session on mount
   useEffect(() => {
-    fetch('/api/funds/seed', { method: 'POST' }).catch(() => {})
+    fetch('/api/auth/me')
+      .then((r) => r.json())
+      .then((d) => setAuthed(d.authenticated === true))
+      .catch(() => setAuthed(false))
+      .finally(() => setAuthChecked(true))
   }, [])
+
+  useEffect(() => {
+    if (authed) {
+      fetch('/api/funds/seed', { method: 'POST' }).catch(() => {})
+    }
+  }, [authed])
 
   const { data: overview, isLoading: overviewLoading } = useQuery<Overview>({
     queryKey: ['overview'],
@@ -62,6 +76,25 @@ export default function Home() {
     setView(v as View)
     setMobileNavOpen(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const logout = () => {
+    fetch('/api/auth/logout', { method: 'POST' }).finally(() => {
+      setAuthed(false)
+      setView('dashboard')
+    })
+  }
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    )
+  }
+
+  if (!authed) {
+    return <LoginScreen onSuccess={() => setAuthed(true)} />
   }
 
   return (
@@ -84,6 +117,7 @@ export default function Home() {
           onMenuClick={() => setMobileNavOpen(true)}
           onToggleTheme={() => setIsDark((v) => !v)}
           isDark={isDark}
+          onLogout={logout}
         />
 
         <main className="flex-1 px-4 sm:px-6 py-6 space-y-6">

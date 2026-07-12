@@ -46,6 +46,7 @@ import { useToast } from '@/hooks/use-toast'
 import type { Channel, ChannelPackage, ChannelStats } from './types'
 import { WorldPackageDialog } from './world-package-dialog'
 import { FreePublicChannelsDialog } from './free-public-channels-dialog'
+import { StreamPlayer } from './stream-player'
 
 const TYPE_ICON: Record<string, React.ElementType> = {
   live: Radio,
@@ -75,6 +76,7 @@ export function ChannelsAndPackages({ forceType }: { forceType?: string }) {
   const [pinDialogOpen, setPinDialogOpen] = useState(false)
   const [worldOpen, setWorldOpen] = useState(false)
   const [freePublicOpen, setFreePublicOpen] = useState(false)
+  const [playerChannel, setPlayerChannel] = useState<{ name: string; url: string; category?: string; viewers?: number } | null>(null)
   const { toast } = useToast()
 
   // Stats
@@ -326,6 +328,7 @@ export function ChannelsAndPackages({ forceType }: { forceType?: string }) {
                   key={c.id}
                   c={c}
                   locked={c.category === 'Adult' && !adultUnlocked}
+                  onStream={(channel) => setPlayerChannel({ name: channel.name, url: channel.streamUrl, category: channel.category, viewers: channel.currentViewers })}
                 />
               ))}
             </div>
@@ -428,6 +431,16 @@ export function ChannelsAndPackages({ forceType }: { forceType?: string }) {
 
       {/* Free Public Channels — iptv-org browser */}
       <FreePublicChannelsDialog open={freePublicOpen} onOpenChange={setFreePublicOpen} />
+
+      {/* In-browser HLS stream player */}
+      <StreamPlayer
+        open={!!playerChannel}
+        onOpenChange={(v) => !v && setPlayerChannel(null)}
+        name={playerChannel?.name ?? ''}
+        url={playerChannel?.url ?? ''}
+        category={playerChannel?.category}
+        viewers={playerChannel?.viewers}
+      />
     </div>
   )
 }
@@ -587,7 +600,7 @@ function PackageCard({
   )
 }
 
-function ChannelCard({ c, locked }: { c: Channel; locked?: boolean }) {
+function ChannelCard({ c, locked, onStream }: { c: Channel; locked?: boolean; onStream?: (c: Channel) => void }) {
   const [hovered, setHovered] = useState(false)
   const isLive = c.type === 'live' && c.currentViewers > 0
   const TypeIcon = TYPE_ICON[c.type] || Tv
@@ -694,7 +707,7 @@ function ChannelCard({ c, locked }: { c: Channel; locked?: boolean }) {
       <Button
         size="sm"
         className="mt-2.5 w-full h-8 gap-1.5 text-[11px] bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary"
-        onClick={() => window.open(c.streamUrl, '_blank')}
+        onClick={() => onStream(c)}
       >
         <Play className="h-3 w-3 fill-current" /> Stream Now
       </Button>

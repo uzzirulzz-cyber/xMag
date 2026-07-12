@@ -63,7 +63,12 @@ export async function POST(request: Request) {
   }
 
   // Atomic: deduct balance + create line + write ledger debit
-  const creds = generateLineCredentials()
+  // Created lines use the real upstream Xtream server credentials so the
+  // M3U/xAPI URLs actually authenticate and play.
+  const xtream = await db.xtreamServer.findFirst({ where: { active: true } })
+  const lineUsername = xtream?.username || creds.username
+  const linePassword = xtream?.password || creds.password
+  const lineDns = xtream ? xtream.host.replace(/\/$/, '') : 'http://magxworld.tv:8080'
   const expiresAt = new Date(Date.now() + plan.months * 30 * 24 * 60 * 60 * 1000)
 
   const result = await db.$transaction(async (tx) => {
@@ -82,8 +87,8 @@ export async function POST(request: Request) {
       tx.subscription.create({
         data: {
           resellerId: fresh.id,
-          username: creds.username,
-          password: creds.password,
+          username: lineUsername,
+          password: linePassword,
           planMonths: plan.months,
           creditsCost: plan.price,
           excludedLive,
@@ -91,6 +96,7 @@ export async function POST(request: Request) {
           excludedSeries,
           seriesCategoryIds: !excludedSeries ? seriesCategoryIds.join(',') : '',
           seriesCategoryCount: !excludedSeries ? seriesCategoryCount : 0,
+          dns: lineDns,
           expiresAt,
           status: 'active',
         },
@@ -113,7 +119,7 @@ export async function POST(request: Request) {
         category: 'subscription',
         amount: plan.price,
         balanceAfter: newBalance,
-        description: `${plan.label} Subscription — Line ${creds.username} [${scope}]`,
+        description: `${plan.label} Subscription — Line ${lineUsername} [${scope}]`,
         reference: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
         status: 'completed',
         subscriptionId: subscription.id,

@@ -21,11 +21,13 @@ export function Topbar({
   onMenuClick,
   onToggleTheme,
   isDark,
+  onLogout,
 }: {
   overview: Overview | undefined
   onMenuClick: () => void
   onToggleTheme: () => void
   isDark: boolean
+  onLogout?: () => void
 }) {
   const initials = overview?.reseller.fullName
     ?.split(' ')
@@ -109,7 +111,7 @@ export function Topbar({
           <DropdownMenuItem>Account Settings</DropdownMenuItem>
           <DropdownMenuItem>API Keys</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-destructive focus:text-destructive">Sign Out</DropdownMenuItem>
+          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={onLogout}>Sign Out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
