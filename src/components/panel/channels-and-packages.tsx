@@ -71,7 +71,7 @@ export function ChannelsAndPackages({ forceType }: { forceType?: string }) {
   const [countryFilter, setCountryFilter] = useState<string>('all')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const [adultUnlocked, setAdultUnlocked] = useState(false)
+  const [adultUnlocked, setAdultUnlocked] = useState(true) // all content open by default (no PIN lock)
   const [pinDialogOpen, setPinDialogOpen] = useState(false)
   const [worldOpen, setWorldOpen] = useState(false)
   const [freePublicOpen, setFreePublicOpen] = useState(false)
