@@ -19,6 +19,8 @@ import {
   Bot,
   Globe,
   Upload,
+  Smartphone,
+  ExternalLink,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -388,7 +390,49 @@ function AdminConsole({ onLock }: { onLock: () => void }) {
 
       {/* Playlist uploader — admin only */}
       <PlaylistUploader />
+
+      {/* Player apps — download official IPTV players */}
+      <Card className="p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Smartphone className="h-4 w-4 text-violet-600" />
+          <h3 className="text-sm font-semibold">Player Apps</h3>
+          <Badge variant="secondary" className="text-[10px] ml-auto">geotv.space</Badge>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <AppCard name="iOS Player" sub="iPhone, iPad & Apple TV" badge="iOS" url="https://apps.apple.com/app/xtream-masters-ott-player/id6781227315" />
+          <AppCard name="Android Player" sub="Phone, Tablet & Android TV" badge="Google Play" url="https://play.google.com/store/apps/details?id=com.xtreammasterstv.player" />
+          <AppCard name="GeoIPTV 2in1" sub="Updated 11-07-2026" badge="UPDATED" url="http://geotv.space:8880/geo-player.apk" />
+          <AppCard name="Active Code Player" sub="Updated 24-01-2026" badge="OK" url="http://geotv.space:8880/ActiveCode-Player-Pro_v3.0.4.apk" />
+          <AppCard name="GEO OTT Player" sub="MAC-based player" badge="FAST" url="http://geotv.space:8880/GeoIPTV-OTT-Player.apk" />
+          <AppCard name="Web Player" sub="Browser-based player" badge="WEB" url="http://geotv.space:8880/player/" />
+        </div>
+      </Card>
     </div>
+  )
+}
+
+function AppCard({ name, sub, badge, url }: { name: string; sub: string; badge: string; url: string }) {
+  const { toast } = useToast()
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-3 rounded-lg border border-border p-3 hover:border-primary/40 hover:bg-muted/40 transition-colors"
+      onClick={() => toast({ title: `Opening ${name}…` })}
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600">
+        <Smartphone className="h-4 w-4" />
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <p className="text-xs font-semibold truncate">{name}</p>
+          <Badge variant="outline" className="text-[8px] px-1 py-0 h-3.5">{badge}</Badge>
+        </div>
+        <p className="text-[10px] text-muted-foreground truncate">{sub}</p>
+      </div>
+      <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
+    </a>
   )
 }
 
