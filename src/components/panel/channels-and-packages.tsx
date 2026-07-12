@@ -689,6 +689,15 @@ function ChannelCard({ c, locked }: { c: Channel; locked?: boolean }) {
           style={{ width: `${Math.min(100, (c.currentViewers / 600) * 100)}%` }}
         />
       </div>
+
+      {/* Stream Now button */}
+      <Button
+        size="sm"
+        className="mt-2.5 w-full h-8 gap-1.5 text-[11px] bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary"
+        onClick={() => window.open(c.streamUrl, '_blank')}
+      >
+        <Play className="h-3 w-3 fill-current" /> Stream Now
+      </Button>
     </div>
   )
 }
