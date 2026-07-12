@@ -18,10 +18,12 @@ import {
   User,
   Bot,
   Globe,
+  Upload,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
@@ -383,7 +385,127 @@ function AdminConsole({ onLock }: { onLock: () => void }) {
           </p>
         </div>
       </Card>
+
+      {/* Playlist uploader — admin only */}
+      <PlaylistUploader />
     </div>
+  )
+}
+
+function PlaylistUploader() {
+  const [mode, setMode] = useState<'url' | 'text' | 'file'>('url')
+  const [pkgName, setPkgName] = useState('')
+  const [url, setUrl] = useState('')
+  const [text, setText] = useState('')
+  const [fileName, setFileName] = useState('')
+  const { toast } = useToast()
+  const qc = useQueryClient()
+
+  const mut = useMutation({
+    mutationFn: async () => {
+      const payload: Record<string, unknown> = { name: pkgName || 'Imported Playlist', source: mode }
+      if (mode === 'url') payload.url = url
+      if (mode === 'text') payload.text = text
+      if (mode === 'file') payload.text = text
+      const res = await fetch('/api/funds/import-m3u', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const d = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(d?.error || 'Import failed')
+      return d
+    },
+    onSuccess: (d) => {
+      toast({ title: 'Playlist imported!', description: `${d.imported} channels added to "${d.packageName}"` })
+      setPkgName(''); setUrl(''); setText(''); setFileName('')
+      qc.invalidateQueries({ queryKey: ['packages'] })
+      qc.invalidateQueries({ queryKey: ['channels'] })
+      qc.invalidateQueries({ queryKey: ['channel-stats'] })
+    },
+    onError: (e: Error) => toast({ title: 'Import failed', description: e.message, variant: 'destructive' }),
+  })
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setFileName(file.name)
+    const reader = new FileReader()
+    reader.onload = () => setText(String(reader.result || ''))
+    reader.readAsText(file)
+  }
+
+  const submit = () => {
+    if (mode === 'url' && !url.trim()) { toast({ title: 'Enter a playlist URL', variant: 'destructive' }); return }
+    if ((mode === 'text' || mode === 'file') && !text.trim()) { toast({ title: 'No playlist content', variant: 'destructive' }); return }
+    mut.mutate()
+  }
+
+  return (
+    <Card className="p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <Upload className="h-4 w-4 text-violet-600" />
+        <h3 className="text-sm font-semibold">Upload Playlist</h3>
+        <Badge variant="secondary" className="text-[10px] ml-auto">Admin only</Badge>
+      </div>
+
+      {/* Mode tabs */}
+      <div className="flex gap-1 mb-4">
+        {(['url', 'text', 'file'] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setMode(m)}
+            className={cn(
+              'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
+              mode === m ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/70',
+            )}
+          >
+            {m === 'url' ? '🔗 URL' : m === 'text' ? '📋 Paste' : '📁 File'}
+          </button>
+        ))}
+      </div>
+
+      {/* Package name */}
+      <div className="space-y-1.5 mb-3">
+        <label className="text-xs font-medium">Package Name <span className="text-muted-foreground">(optional)</span></label>
+        <Input value={pkgName} onChange={(e) => setPkgName(e.target.value)} placeholder="My Playlist" className="h-9" />
+      </div>
+
+      {/* Input area */}
+      {mode === 'url' && (
+        <div className="space-y-1.5 mb-3">
+          <label className="text-xs font-medium">M3U Playlist URL</label>
+          <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com/playlist.m3u" className="h-9" />
+        </div>
+      )}
+
+      {mode === 'text' && (
+        <div className="space-y-1.5 mb-3">
+          <label className="text-xs font-medium">Paste M3U Content</label>
+          <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={6} placeholder="#EXTM3U&#10;#EXTINF:-1,Channel Name&#10;https://..." className="font-mono text-xs" />
+        </div>
+      )}
+
+      {mode === 'file' && (
+        <div className="space-y-1.5 mb-3">
+          <label className="text-xs font-medium">Upload .m3u File</label>
+          <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border px-4 py-6 text-sm text-muted-foreground hover:border-primary/50 hover:bg-muted/40 transition-colors">
+            <Upload className="h-4 w-4" />
+            {fileName || 'Click to select .m3u file'}
+            <input type="file" accept=".m3u,.m3u8,text/plain" className="hidden" onChange={handleFile} />
+          </label>
+        </div>
+      )}
+
+      <Button className="w-full gap-1.5" disabled={mut.isPending} onClick={submit}>
+        {mut.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Importing…</> : <><Upload className="h-4 w-4" /> Import Playlist</>}
+      </Button>
+
+      <p className="text-[11px] text-muted-foreground mt-3">
+        Imports all channels from the playlist. They appear in the Channels browser with Stream Now buttons. Only add content you have legal rights to.
+      </p>
+    </Card>
   )
 }
 
