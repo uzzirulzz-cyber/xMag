@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Lock, User, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react'
+import { Lock, User, Eye, EyeOff, Loader2, ArrowRight, Mail, Phone, UserPlus } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,13 +10,17 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 
 export function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
+  const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const { toast } = useToast()
   const qc = useQueryClient()
 
-  const mut = useMutation({
+  const loginMut = useMutation({
     mutationFn: async () => {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -35,14 +39,35 @@ export function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
     onError: (e: Error) => toast({ title: 'Login failed', description: e.message, variant: 'destructive' }),
   })
 
+  const signupMut = useMutation({
+    mutationFn: async () => {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, fullName, phone, password }),
+      })
+      const d = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(d?.error || 'Signup failed')
+      return d
+    },
+    onSuccess: () => {
+      toast({ title: 'Account created!', description: 'Welcome to MaGx World Super IPTV.' })
+      qc.invalidateQueries({ queryKey: ['overview'] })
+      onSuccess()
+    },
+    onError: (e: Error) => toast({ title: 'Sign up failed', description: e.message, variant: 'destructive' }),
+  })
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    mut.mutate()
+    if (mode === 'login') loginMut.mutate()
+    else signupMut.mutate()
   }
+
+  const loading = loginMut.isPending || signupMut.isPending
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black p-4 relative overflow-hidden">
-      {/* Background glow */}
       <div className="pointer-events-none absolute top-1/4 left-1/3 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-1/4 right-1/3 h-96 w-96 rounded-full bg-red-600/20 blur-3xl" />
 
@@ -57,55 +82,81 @@ export function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
         </div>
 
         <Card className="overflow-hidden">
-          <div className="flex items-center gap-2.5 bg-gradient-to-r from-primary/10 to-transparent px-5 py-3 border-b border-border">
-            <Lock className="h-4 w-4 text-primary" />
-            <h2 className="text-sm font-semibold">Reseller Login</h2>
+          {/* Mode tabs */}
+          <div className="flex border-b border-border">
+            <button
+              type="button"
+              onClick={() => setMode('login')}
+              className={`flex-1 py-3 text-sm font-medium transition-colors relative ${mode === 'login' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              Sign In
+              {mode === 'login' && <span className="absolute bottom-0 left-1/2 h-0.5 w-12 -translate-x-1/2 rounded-full bg-primary" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('signup')}
+              className={`flex-1 py-3 text-sm font-medium transition-colors relative ${mode === 'signup' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              Create Account
+              {mode === 'signup' && <span className="absolute bottom-0 left-1/2 h-0.5 w-12 -translate-x-1/2 rounded-full bg-primary" />}
+            </button>
           </div>
 
           <form onSubmit={submit} className="p-5 space-y-4">
+            {mode === 'signup' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-xs">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" className="pl-9" required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-xs">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-9" required />
+                  </div>
+                </div>
+              </>
+            )}
+
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-xs">Username or Email</Label>
+              <Label htmlFor="username" className="text-xs">{mode === 'signup' ? 'Username' : 'Username or Email'}</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="starreseller"
-                  className="pl-9"
-                  autoFocus
-                  required
-                />
+                <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="starreseller" className="pl-9" autoFocus required />
               </div>
             </div>
+
+            {mode === 'signup' && (
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-xs">Phone <span className="text-muted-foreground">(optional)</span></Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+92 300 1234567" className="pl-9" />
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-xs">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPw ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="pl-9 pr-10"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPw((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label="Toggle password visibility"
-                >
+                <Input id="password" type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-9 pr-10" required />
+                <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label="Toggle password visibility">
                   {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {mode === 'signup' && <p className="text-[10px] text-muted-foreground">Minimum 6 characters</p>}
             </div>
 
-            <Button type="submit" className="w-full gap-2" disabled={mut.isPending}>
-              {mut.isPending ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> Signing in…</>
+            <Button type="submit" className="w-full gap-2" disabled={loading}>
+              {loading ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> {mode === 'signup' ? 'Creating account…' : 'Signing in…'}</>
+              ) : mode === 'signup' ? (
+                <><UserPlus className="h-4 w-4" /> Create Account <ArrowRight className="h-4 w-4" /></>
               ) : (
                 <>Sign In <ArrowRight className="h-4 w-4" /></>
               )}
@@ -128,6 +179,15 @@ export function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
                 Sign up with PayPal
               </button>
             </div>
+
+            {mode === 'signup' && (
+              <p className="text-center text-[11px] text-muted-foreground">
+                Already have an account?{' '}
+                <button type="button" className="text-primary hover:underline" onClick={() => setMode('login')}>
+                  Sign in
+                </button>
+              </p>
+            )}
           </form>
         </Card>
 
@@ -141,11 +201,7 @@ export function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function SocialBtn({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex h-10 items-center justify-center rounded-lg border border-border bg-muted/30 text-xs font-medium hover:bg-muted transition-colors"
-    >
+    <button type="button" onClick={onClick} className="flex h-10 items-center justify-center rounded-lg border border-border bg-muted/30 text-xs font-medium hover:bg-muted transition-colors">
       {label}
     </button>
   )
