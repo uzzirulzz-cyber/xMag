@@ -6,13 +6,13 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 // IPTV reseller account — owns a credit balance used to purchase subscriptions
 model Reseller {
-  id           String        @id @default(cuid())
+  id           String        @id @default(cuid()) @map("_id")
   username     String        @unique
   email        String        @unique
   fullName     String
@@ -33,7 +33,7 @@ model Reseller {
 
 // Supported funding channels: mobile wallets, bank transfer, crypto, card
 model PaymentMethod {
-  id            String       @id @default(cuid())
+  id            String       @id @default(cuid()) @map("_id")
   name          String // JazzCash, Easypaisa, Bank Al Habib, USDT TRC20
   type          String // mobile_wallet | bank_transfer | crypto | card
   accountTitle  String
@@ -54,7 +54,7 @@ model PaymentMethod {
 
 // A reseller-initiated request to add funds, pending admin review
 model FundRequest {
-  id              String        @id @default(cuid())
+  id              String        @id @default(cuid()) @map("_id")
   resellerId      String
   paymentMethodId String
   amount          Float
@@ -71,12 +71,12 @@ model FundRequest {
   updatedAt       DateTime      @updatedAt
   reseller        Reseller      @relation(fields: [resellerId], references: [id], onDelete: Cascade)
   paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
-  transaction     Transaction?
+  transactions    Transaction[]
 }
 
 // Immutable ledger of every credit/debit against a reseller balance
 model Transaction {
-  id            String       @id @default(cuid())
+  id            String       @id @default(cuid()) @map("_id")
   resellerId    String
   type          String // credit | debit
   category      String // fund | subscription | refund | adjustment
@@ -85,7 +85,7 @@ model Transaction {
   description   String
   reference     String?
   status        String       @default("completed") // pending | completed | failed
-  fundRequestId String?      @unique
+  fundRequestId String?
   subscriptionId String?
   createdAt     DateTime     @default(now())
   reseller      Reseller     @relation(fields: [resellerId], references: [id], onDelete: Cascade)
@@ -97,7 +97,7 @@ model Transaction {
 // Catalogue of content categories a reseller can include/exclude per line.
 // Top-level types are live | vod | series; detailed rows are mostly series.
 model ContentCategory {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   type      String   // live | vod | series
   code      String   // language/region code, e.g. EN, IN, PK, AR
   name      String   // human label, e.g. "ALL English Series"
@@ -109,7 +109,7 @@ model ContentCategory {
 
 // A content package / bouquet — a bundle of channels sold together.
 model Package {
-  id              String   @id @default(cuid())
+  id              String   @id @default(cuid()) @map("_id")
   name            String   // "Sports Pack", "Pakistani Channels", "English Movies"
   type            String   // live | vod | series
   description     String?
@@ -127,7 +127,7 @@ model Package {
 
 // A single streamable channel / VOD item / series with live viewership.
 model Channel {
-  id            String   @id @default(cuid())
+  id            String   @id @default(cuid()) @map("_id")
   packageId     String
   name          String   // "ARY Digital", "PTV Sports", "Sky Sports Main Event"
   type          String   // live | vod | series
@@ -153,7 +153,7 @@ model Channel {
 
 // An IPTV line created by a reseller, spending credit from their balance.
 model Subscription {
-  id               String   @id @default(cuid())
+  id               String   @id @default(cuid()) @map("_id")
   resellerId       String
   username         String   @unique
   password         String
@@ -182,7 +182,7 @@ model Subscription {
 
 // Per-line connection log entry — mirrors Xtream UI's active-connections tracker.
 model Connection {
-  id            String   @id @default(cuid())
+  id            String   @id @default(cuid()) @map("_id")
   subscriptionId String
   ip            String
   country       String?
@@ -201,7 +201,7 @@ model Connection {
 // In-app notifications for the reseller — mirrors the legacy global.js
 // load_notifications / load_notifications_unread / load_notification_url flow.
 model Notification {
-  id          String   @id @default(cuid())
+  id          String   @id @default(cuid()) @map("_id")
   resellerId  String
   type        String   // info | success | warning | fund | subscription | system
   title       String
@@ -217,7 +217,7 @@ model Notification {
 // A real Xtream Codes server the reseller is subscribed to. The World Package
 // pulls live channels + VODs from this server via its player_api.php endpoint.
 model XtreamServer {
-  id          String   @id @default(cuid())
+  id          String   @id @default(cuid()) @map("_id")
   resellerId  String
   label       String   // "World Package (Family)"
   host        String   // http://geotv.space:8880

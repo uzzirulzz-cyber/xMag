@@ -17,8 +17,8 @@ import { cn } from '@/lib/utils'
 
 interface NavItem {
   label: string
+  view: string
   icon: React.ElementType
-  active?: boolean
   badge?: string
 }
 
@@ -26,31 +26,39 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
   {
     title: 'Main',
     items: [
-      { label: 'Dashboard', icon: LayoutDashboard },
-      { label: 'Funds', icon: Wallet, active: true, badge: '3' },
-      { label: 'Orders', icon: ShoppingBag },
+      { label: 'Dashboard', view: 'dashboard', icon: LayoutDashboard },
+      { label: 'Funds', view: 'funds', icon: Wallet, badge: '3' },
+      { label: 'Orders', view: 'orders', icon: ShoppingBag },
     ],
   },
   {
     title: 'Content',
     items: [
-      { label: 'Live Streams', icon: Tv },
-      { label: 'Movies', icon: Film },
-      { label: 'Series', icon: Clapperboard },
-      { label: 'Lines', icon: Users },
+      { label: 'Live Streams', view: 'live', icon: Tv },
+      { label: 'Movies', view: 'movies', icon: Film },
+      { label: 'Series', view: 'series', icon: Clapperboard },
+      { label: 'Lines', view: 'lines', icon: Users },
     ],
   },
   {
     title: 'System',
     items: [
-      { label: 'Servers', icon: Server },
-      { label: 'Settings', icon: Settings },
-      { label: 'Support', icon: LifeBuoy },
+      { label: 'Servers', view: 'servers', icon: Server },
+      { label: 'Settings', view: 'settings', icon: Settings },
+      { label: 'Support', view: 'support', icon: LifeBuoy },
     ],
   },
 ]
 
-export function Sidebar({ onNavigate, className }: { onNavigate?: () => void; className?: string }) {
+export function Sidebar({
+  activeView = 'funds',
+  onNavigate,
+  className,
+}: {
+  activeView?: string
+  onNavigate?: (view: string) => void
+  className?: string
+}) {
   return (
     <div className={cn('flex h-full flex-col bg-sidebar text-sidebar-foreground', className)}>
       {/* Brand */}
@@ -74,17 +82,18 @@ export function Sidebar({ onNavigate, className }: { onNavigate?: () => void; cl
             <ul className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon
+                const isActive = activeView === item.view
                 return (
                   <li key={item.label}>
                     <a
                       href="#"
                       onClick={(e) => {
                         e.preventDefault()
-                        onNavigate?.()
+                        onNavigate?.(item.view)
                       }}
                       className={cn(
                         'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
-                        item.active
+                        isActive
                           ? 'bg-sidebar-primary text-sidebar-primary-foreground font-medium shadow-sm'
                           : 'text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                       )}
@@ -95,7 +104,7 @@ export function Sidebar({ onNavigate, className }: { onNavigate?: () => void; cl
                         <span
                           className={cn(
                             'rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none',
-                            item.active
+                            isActive
                               ? 'bg-sidebar-primary-foreground/20 text-sidebar-primary-foreground'
                               : 'bg-sidebar-accent text-sidebar-accent-foreground',
                           )}

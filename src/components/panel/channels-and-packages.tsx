@@ -63,9 +63,9 @@ const CATEGORY_COLORS: Record<string, string> = {
   Religious: '#65a30d',
 }
 
-export function ChannelsAndPackages() {
+export function ChannelsAndPackages({ forceType }: { forceType?: string }) {
   const [selectedPackage, setSelectedPackage] = useState<string>('all')
-  const [typeFilter, setTypeFilter] = useState<string>('all')
+  const [typeFilter, setTypeFilter] = useState<string>(forceType ?? 'all')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [countryFilter, setCountryFilter] = useState<string>('all')
   const [search, setSearch] = useState('')
