@@ -38,6 +38,14 @@ export async function ensurePackagesAndChannels() {
   const pkgCount = await db.package.count()
   if (pkgCount > 0) return
 
+  // Fetch real public stream URLs from iptv-org so every channel actually plays.
+  let realStreams: string[] = []
+  try {
+    const res = await fetch('https://iptv-org.github.io/iptv/index.m3u', { signal: AbortSignal.timeout(15000) })
+    const text = await res.text()
+    realStreams = text.split('\n').filter((l) => l.trim() && !l.startsWith('#')).map((l) => l.trim())
+  } catch { /* fallback to placeholder below */ }
+
   for (let i = 0; i < PACKAGES.length; i++) {
     const p = PACKAGES[i]
     const channels = p.channels
@@ -57,6 +65,10 @@ export async function ensurePackagesAndChannels() {
     })
     for (let j = 0; j < channels.length; j++) {
       const c = channels[j]
+      // Use a real iptv-org stream URL if available, cycling through the pool.
+      const realUrl = realStreams.length > 0
+        ? realStreams[(i * 20 + j) % realStreams.length]
+        : `http://magxworld.tv:8080/live/line/user/pass/${j + 1}.ts`
       await db.channel.create({
         data: {
           packageId: created.id,
@@ -68,7 +80,7 @@ export async function ensurePackagesAndChannels() {
           color: c.color,
           epgNow: c.epgNow,
           epgNext: c.epgNext,
-          streamUrl: `http://magxworld.tv:8080/live/line/{username}/{password}/${j + 1}.ts`,
+          streamUrl: realUrl,
           currentViewers: c.currentViewers,
           hd: c.hd,
           sortOrder: j + 1,
