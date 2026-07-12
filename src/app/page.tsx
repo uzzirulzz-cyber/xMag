@@ -38,7 +38,13 @@ export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [isDark, setIsDark] = useState(true) // MaGx World Super IPTV — black UI theme by default
   const [subDialogOpen, setSubDialogOpen] = useState(false)
-  const [view, setView] = useState<View>('dashboard')
+  const [view, setView] = useState<View>(() => {
+    if (typeof window === 'undefined') return 'dashboard'
+    const params = new URLSearchParams(window.location.search)
+    const v = params.get('view')
+    const valid = ['dashboard','funds','orders','live','movies','series','lines','servers','settings','support','storefront','admin']
+    return (v && valid.includes(v)) ? (v as View) : 'dashboard'
+  })
   const [authed, setAuthed] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
 
@@ -77,7 +83,24 @@ export default function Home() {
     setView(v as View)
     setMobileNavOpen(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    // Update URL so views are shareable + indexable
+    const url = new URL(window.location.href)
+    url.searchParams.set('view', v)
+    window.history.pushState({}, '', url.toString())
   }
+
+  // Listen for back/forward navigation
+  useEffect(() => {
+    const handler = () => {
+      const params = new URLSearchParams(window.location.search)
+      const v = params.get('view')
+      if (v && ['dashboard','funds','orders','live','movies','series','lines','servers','settings','support','storefront','admin'].includes(v)) {
+        setView(v as View)
+      }
+    }
+    window.addEventListener('popstate', handler)
+    return () => window.removeEventListener('popstate', handler)
+  }, [])
 
   const logout = () => {
     fetch('/api/auth/logout', { method: 'POST' }).finally(() => {
@@ -94,6 +117,31 @@ export default function Home() {
     )
   }
 
+  // Store Front is public (indexable, no login required) for SEO + visitors
+  if (!authed && view === 'storefront') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="px-4 sm:px-6 py-4 border-b border-border bg-card/50 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <img src="/magx-icon.png" alt="MaGx" className="h-8 w-8 rounded-lg" />
+            <span className="text-sm font-bold">MaGx <span className="text-primary">World</span></span>
+          </div>
+          <Button size="sm" onClick={() => navigate('dashboard')} className="gap-1.5">Sign In</Button>
+        </div>
+        <main className="px-4 sm:px-6 py-6">
+          <StoreFrontView onNavigate={navigate} />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  // Admin requires login (gated)
+  if (!authed && view === 'admin') {
+    return <LoginScreen onSuccess={() => setAuthed(true)} />
+  }
+
+  // All other views require login
   if (!authed) {
     return <LoginScreen onSuccess={() => setAuthed(true)} />
   }

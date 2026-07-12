@@ -1,14 +1,12 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+Allow: /?view=storefront
+Disallow: /?view=admin
+Disallow: /?view=funds
+Disallow: /?view=orders
+Disallow: /?view=lines
+Disallow: /?view=settings
+Disallow: /api/
+
+# Store Front is indexable; admin + private views are not
+Sitemap: /sitemap.xml
