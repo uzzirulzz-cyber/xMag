@@ -29,6 +29,7 @@ model Reseller {
   subscriptions Subscription[]
   notifications Notification[]
   xtreamServers XtreamServer[]
+  botConfigs    BotConfig[]
 }
 
 // Supported funding channels: mobile wallets, bank transfer, crypto, card
@@ -226,4 +227,25 @@ model XtreamServer {
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   reseller    Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
+}
+
+// Payment-automation bot config — the "auto-credit / auto-repair" engine that
+// verifies incoming fund requests and credits reseller balances automatically.
+// Tokens are stored in env vars; this model holds only the runtime toggles.
+model BotConfig {
+  id              String   @id @default(cuid()) @map("_id")
+  resellerId      String   @unique
+  autoCredit      Boolean  @default(true)   // auto-verify + credit fund requests
+  jazzcashEnabled Boolean  @default(true)   // JazzCash token verification
+  easypaisaEnabled Boolean @default(true)   // Easypaisa token verification
+  bankEnabled     Boolean  @default(false)  // bank transfers need manual review
+  usdtEnabled     Boolean  @default(true)   // USDT auto-confirm after 1 conf
+  minAutoCredit   Float    @default(500)    // minimum amount for auto-credit
+  maxAutoCredit   Float    @default(50000)  // above this, manual review required
+  pollIntervalSec Int      @default(60)     // how often the bot polls for new requests
+  lastRunAt       DateTime?
+  totalAutoCredited Float  @default(0)      // lifetime PKR auto-credited
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  reseller        Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
 }

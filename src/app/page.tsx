@@ -14,6 +14,7 @@ import { ChannelsAndPackages } from '@/components/panel/channels-and-packages'
 import { DashboardView } from '@/components/panel/dashboard-view'
 import { OrdersView, ServersView, SettingsView, SupportView } from '@/components/panel/system-views'
 import { LiveStreamsView, MoviesView, SeriesView } from '@/components/panel/content-views'
+import { PaymentAutomationPanel } from '@/components/panel/payment-automation-panel'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -100,6 +101,7 @@ export default function Home() {
               </div>
               <BalanceCards overview={overview} loading={overviewLoading} />
               <MySubscriptions onNew={() => setSubDialogOpen(true)} balance={overview?.balance ?? 0} />
+              <PaymentAutomationPanel />
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 <div className="xl:col-span-2">
                   <AddFunds methods={methodsData?.methods ?? []} loading={methodsLoading} />

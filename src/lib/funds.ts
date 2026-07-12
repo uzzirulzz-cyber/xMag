@@ -75,19 +75,34 @@ export async function ensureSeed() {
   const { getXtreamServer } = await import('@/lib/xtream')
   await getXtreamServer()
 
+  // Seed the payment-automation bot config
+  const { getBotConfig } = await import('@/lib/bot')
+  await getBotConfig()
+
   return reseller
 }
 
 async function seedPaymentMethods() {
+  // All payment methods route funds directly to the admin (MUHAMMAD UZAIR).
+  // Account details are read from env so they never appear in source code.
+  const adminTitle = process.env.ADMIN_ACCOUNT_TITLE || 'MUHAMMAD UZAIR'
+  const adminEasypaisa = process.env.ADMIN_EASYPAISA || '03390005715'
+  const adminBank = process.env.ADMIN_BANK_NAME || 'Bank Alfalah'
+  const adminIban = process.env.ADMIN_IBAN || 'PK52ALFH0336001010537701'
+  const adminAccount = process.env.ADMIN_ACCOUNT_NUMBER || '03361010537701'
+  const adminSwift = process.env.ADMIN_SWIFT || 'ALFHPKKAXXX'
+  const adminBranch = process.env.ADMIN_BRANCH || 'E-11 MARKAZ BRANCH ISLAMABAD'
+  const adminBranchCode = process.env.ADMIN_BRANCH_CODE || '0336'
+
   const methods = [
     {
       name: 'JazzCash',
       type: 'mobile_wallet',
-      accountTitle: 'Star IPTV Store',
-      accountNumber: '03001234567',
+      accountTitle: adminTitle,
+      accountNumber: adminEasypaisa,
       network: 'Jazz',
       instructions:
-        'Open JazzCash app → Send Money → Enter our number → Enter exact amount → Use TID as reference. Submit the fund request with the TID.',
+        `Open JazzCash app → Send Money → Enter ${adminEasypaisa} (${adminTitle}) → Enter exact amount → Use TID as reference. The auto-credit bot verifies and credits within 10 minutes.`,
       minAmount: 500,
       maxAmount: 100000,
       feePercent: 0,
@@ -98,11 +113,11 @@ async function seedPaymentMethods() {
     {
       name: 'Easypaisa',
       type: 'mobile_wallet',
-      accountTitle: 'Star IPTV Store',
-      accountNumber: '03451234567',
+      accountTitle: adminTitle,
+      accountNumber: adminEasypaisa,
       network: 'Telenor',
       instructions:
-        'Open Easypaisa app → Send Money → Enter our number → Enter exact amount → Use TID as reference. Submit the fund request with the TID.',
+        `Open Easypaisa app → Send Money → Enter ${adminEasypaisa} (${adminTitle}) → Enter exact amount → Use TID as reference. Auto-credited within 10 minutes.`,
       minAmount: 500,
       maxAmount: 100000,
       feePercent: 0,
@@ -111,29 +126,29 @@ async function seedPaymentMethods() {
       sortOrder: 2,
     },
     {
-      name: 'Bank Al Habib',
+      name: 'Bank Alfalah',
       type: 'bank_transfer',
-      accountTitle: 'Star IPTV Store (Pvt) Ltd',
-      accountNumber: '0500-1234567-001',
-      bankName: 'Bank Al Habib',
-      network: 'BAHL',
+      accountTitle: adminTitle,
+      accountNumber: adminAccount,
+      bankName: adminBank,
+      network: 'ALFH',
       instructions:
-        'Transfer the exact amount via IBFT/RAAST from any bank app. Use the transaction reference number (FT/IBFT) when submitting the fund request.',
+        `Transfer via IBFT/RAAST to ${adminTitle}, ${adminBank}, A/C ${adminAccount}, IBAN ${adminIban}, Branch ${adminBranch} (${adminBranchCode}), Swift ${adminSwift}. Use FT/IBFT ref when submitting. Funds route directly to admin.`,
       minAmount: 1000,
-      maxAmount: 500000,
+      maxAmount: 5000000,
       feePercent: 0,
-      logoText: 'BAH',
-      color: '#1B75BC',
+      logoText: 'BA',
+      color: '#E4002B',
       sortOrder: 3,
     },
     {
       name: 'USDT (TRC20)',
       type: 'crypto',
-      accountTitle: 'Star IPTV Store',
+      accountTitle: adminTitle,
       accountNumber: 'TJbZ9rQ7...xK4mN8pQ (TRC20)',
       network: 'TRC20',
       instructions:
-        'Send USDT on the TRC20 network only to the wallet address above. Use rate 1 USD = PKR 280. Submit the fund request with the TXID and amount in USD.',
+        'Send USDT on the TRC20 network only. Use rate 1 USD = PKR 280. Submit the fund request with the TXID and amount in USD. Auto-credited within 10 min of 1 confirmation.',
       minAmount: 1000,
       maxAmount: 1000000,
       feePercent: 0,
@@ -144,7 +159,7 @@ async function seedPaymentMethods() {
     {
       name: 'Credit / Debit Card',
       type: 'card',
-      accountTitle: 'Star IPTV Store',
+      accountTitle: adminTitle,
       accountNumber: 'Secure hosted checkout',
       network: 'Visa / Mastercard',
       instructions:

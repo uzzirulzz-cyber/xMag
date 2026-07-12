@@ -44,6 +44,10 @@ export function DashboardView({ onNavigate }: { onNavigate: (v: string) => void 
     queryKey: ['subscriptions', 'dashboard'],
     queryFn: async () => (await fetch('/api/funds/subscriptions')).json(),
   })
+  const { data: admin } = useQuery<{ accountTitle: string; bankName: string; routing: string }>({
+    queryKey: ['admin-info'],
+    queryFn: async () => (await fetch('/api/funds/admin-info')).json(),
+  })
 
   const activeLines = subData?.subscriptions.filter((s) => s.status === 'active').length ?? 0
 
@@ -116,8 +120,8 @@ export function DashboardView({ onNavigate }: { onNavigate: (v: string) => void 
             <RouteRow label="Routed to admin" value={overview ? formatCurrency(overview.totalAdded) : '—'} icon={Crown} color="text-violet-600" />
           </div>
           <div className="mt-4 rounded-lg bg-violet-500/5 p-3 text-[11px] text-muted-foreground">
-            <span className="font-medium text-violet-600 dark:text-violet-400">Admin:</span> Star IPTV HQ ·
-            receives 100% of deposits · approves credit to resellers.
+            <span className="font-medium text-violet-600 dark:text-violet-400">Admin:</span> {admin?.accountTitle ?? 'MUHAMMAD UZAIR'} ·
+            {admin?.bankName ?? 'Bank Alfalah'} · receives 100% of deposits worldwide · approves credit to resellers.
           </div>
         </Card>
 
