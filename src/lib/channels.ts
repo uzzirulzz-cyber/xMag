@@ -68,7 +68,7 @@ export async function ensurePackagesAndChannels() {
           color: c.color,
           epgNow: c.epgNow,
           epgNext: c.epgNext,
-          streamUrl: `http://stariptv.pk:8080/live/line/{username}/{password}/${j + 1}.ts`,
+          streamUrl: `http://magxworld.tv:8080/live/line/{username}/{password}/${j + 1}.ts`,
           currentViewers: c.currentViewers,
           hd: c.hd,
           sortOrder: j + 1,

@@ -45,8 +45,8 @@ export async function ensureSeed() {
     reseller = await db.reseller.create({
       data: {
         username: 'starreseller',
-        email: 'reseller@stariptv.pk',
-        fullName: 'Star Reseller',
+        email: 'reseller@magxworld.tv',
+        fullName: 'MaGx Reseller',
         passwordHash: 'demo-hash',
         phone: '+92 300 1234567',
         balance: 42500,

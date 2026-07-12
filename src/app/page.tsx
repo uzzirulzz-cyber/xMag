@@ -159,7 +159,7 @@ function QuickTips() {
   const tips = [
     { title: 'How funding works', body: 'Send the exact amount to the selected account, then submit the transaction reference. Credit is added after manual verification.' },
     { title: 'Processing time', body: 'JazzCash & Easypaisa: 10–30 min. Bank transfer: up to 2 hours. USDT: within 10 min of 1 confirmation.' },
-    { title: 'Need help?', body: 'Contact support on WhatsApp +92 300 1234567 or email support@stariptv.pk with your transaction reference for faster resolution.' },
+    { title: 'Need help?', body: 'Contact support on WhatsApp +92 300 1234567 or email support@magxworld.tv with your transaction reference for faster resolution.' },
   ]
   return (
     <aside className="space-y-3">
@@ -189,7 +189,7 @@ function Footer() {
   return (
     <footer className="mt-auto border-t border-border bg-card/50 px-4 sm:px-6 py-4">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-        <p>© {new Date().getFullYear()} Star IPTV Store. Enterprise Panel v2.4.1 · MongoDB Atlas</p>
+        <p>© {new Date().getFullYear()} MaGx World Super IPTV. Enterprise Panel v2.4.1 · MongoDB Atlas</p>
         <div className="flex items-center gap-4">
           <a href="#" className="hover:text-foreground transition-colors">Terms</a>
           <a href="#" className="hover:text-foreground transition-colors">Privacy</a>

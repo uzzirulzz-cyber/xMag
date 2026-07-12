@@ -202,7 +202,7 @@ export function MySubscriptions({ onNew, balance }: { onNew: () => void; balance
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `stariptv-lines-${Date.now()}.csv`
+    a.download = `magx-lines-${Date.now()}.csv`
     a.click()
     URL.revokeObjectURL(url)
     toast({ title: 'CSV exported', description: `${filtered.length} lines` })

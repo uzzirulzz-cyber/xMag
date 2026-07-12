@@ -107,8 +107,8 @@ export function ServersView() {
 
   const servers = [
     { name: 'Xtream Master', host: 'geotv.space:8880', type: 'Streaming', status: 'online', load: 42, icon: Globe, color: 'text-violet-600' },
-    { name: 'EU-2 Edge', host: 'eu2.stariptv.pk', type: 'CDN Edge', status: 'online', load: 67, icon: Server, color: 'text-emerald-600' },
-    { name: 'US-1 Edge', host: 'us1.stariptv.pk', type: 'CDN Edge', status: 'online', load: 38, icon: Server, color: 'text-sky-600' },
+    { name: 'EU-2 Edge', host: 'eu2.magxworld.tv', type: 'CDN Edge', status: 'online', load: 67, icon: Server, color: 'text-emerald-600' },
+    { name: 'US-1 Edge', host: 'us1.magxworld.tv', type: 'CDN Edge', status: 'online', load: 38, icon: Server, color: 'text-sky-600' },
   ]
 
   return (
@@ -339,7 +339,7 @@ export function SupportView() {
         <Card className="p-5 text-center cursor-pointer hover:border-primary/40 transition-colors" onClick={() => toast({ title: 'Opening email…' })}>
           <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary"><Mail className="h-6 w-6" /></span>
           <p className="mt-2 text-sm font-semibold">Email</p>
-          <p className="text-[11px] text-muted-foreground">support@stariptv.pk</p>
+          <p className="text-[11px] text-muted-foreground">support@magxworld.tv</p>
         </Card>
         <Card className="p-5 text-center cursor-pointer hover:border-primary/40 transition-colors" onClick={() => toast({ title: 'Calling…' })}>
           <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-600"><Phone className="h-6 w-6" /></span>

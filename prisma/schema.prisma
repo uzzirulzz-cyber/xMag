@@ -167,7 +167,7 @@ model Subscription {
   // Selected detailed series categories (comma-separated ids; empty = all)
   seriesCategoryIds String  @default("")
   seriesCategoryCount Int   @default(0) // how many series categories selected (0 = all)
-  dns              String   @default("http://stariptv.pk:8080")
+  dns              String   @default("http://magxworld.tv:8080")
   status           String   @default("active") // active | expired | disabled
   maxConnections   Int      @default(1)
   currentConnections Int    @default(0)

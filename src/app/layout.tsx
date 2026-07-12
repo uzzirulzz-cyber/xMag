@@ -15,23 +15,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Star IPTV Panel — Funds",
-  description: "Reseller funds management panel for Star IPTV. Add credit, manage transactions and review payment methods.",
-  keywords: ["IPTV", "reseller panel", "funds", "JazzCash", "Easypaisa", "USDT", "Star IPTV"],
-  authors: [{ name: "Star IPTV Store" }],
+  title: "MaGx World Super IPTV — Reseller Panel",
+  description: "MaGx World Super IPTV reseller panel. Add funds, manage IPTV lines, browse 18,000+ channels and automate payments.",
+  keywords: ["MaGx", "IPTV", "reseller panel", "funds", "JazzCash", "Easypaisa", "USDT", "Bank Alfalah", "Super IPTV"],
+  authors: [{ name: "MaGx World Super IPTV" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/magx-icon.png",
+    apple: "/magx-icon.png",
   },
   openGraph: {
-    title: "Star IPTV Panel — Funds",
-    description: "Reseller funds management panel for Star IPTV.",
-    siteName: "Star IPTV Panel",
+    title: "MaGx World Super IPTV — Reseller Panel",
+    description: "Reseller funds, IPTV lines, 18,000+ channels, and payment automation.",
+    siteName: "MaGx World Super IPTV",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Star IPTV Panel — Funds",
-    description: "Reseller funds management panel for Star IPTV.",
+    title: "MaGx World Super IPTV — Reseller Panel",
+    description: "Reseller funds, IPTV lines, 18,000+ channels, and payment automation.",
   },
 };
 

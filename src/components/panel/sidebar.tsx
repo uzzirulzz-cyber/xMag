@@ -11,7 +11,6 @@ import {
   Server,
   Settings,
   LifeBuoy,
-  Star,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -63,12 +62,12 @@ export function Sidebar({
     <div className={cn('flex h-full flex-col bg-sidebar text-sidebar-foreground', className)}>
       {/* Brand */}
       <div className="flex items-center gap-3 px-5 h-16 border-b border-sidebar-border shrink-0">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground shadow-sm">
-          <Star className="h-5 w-5 fill-current" />
-        </div>
+        <img src="/magx-icon.png" alt="MaGx" className="h-9 w-9 rounded-lg object-cover ring-1 ring-sidebar-primary/40" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold leading-tight truncate">Star IPTV</p>
-          <p className="text-[11px] text-sidebar-foreground/60 leading-tight truncate">Reseller Panel</p>
+          <p className="text-sm font-bold leading-tight truncate tracking-tight">
+            MaGx <span className="text-[#ff3b3b]">World</span>
+          </p>
+          <p className="text-[10px] text-sidebar-foreground/60 leading-tight truncate uppercase tracking-wider">Super IPTV Panel</p>
         </div>
       </div>
 

@@ -64,10 +64,10 @@ export function DashboardView({ onNavigate }: { onNavigate: (v: string) => void 
       <Card className="relative overflow-hidden p-6 bg-gradient-to-br from-primary/10 via-card to-card border-primary/20">
         <div className="relative z-10">
           <h1 className="text-2xl font-bold tracking-tight">
-            Welcome back, {overview?.reseller.fullName ?? 'Reseller'} 👋
+            Welcome to MaGx World Super IPTV 👋
           </h1>
           <p className="text-sm text-muted-foreground mt-1 max-w-xl">
-            Your reseller panel is running in enterprise mode on MongoDB Atlas. Manage funds, create IPTV lines, and browse {stats ? formatNumber(stats.advertisedTotal) : '15,000'}+ channels.
+            Your enterprise reseller panel on MongoDB Atlas. Manage funds, create IPTV lines, browse {stats ? formatNumber(stats.advertisedTotal) : '18,000'}+ channels, and automate payments worldwide.
           </p>
           <div className="mt-4 flex gap-2 flex-wrap">
             <Button size="sm" onClick={() => onNavigate('funds')} className="gap-1.5">
