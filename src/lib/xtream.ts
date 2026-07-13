@@ -114,7 +114,7 @@ export async function callXtreamApi(
 
   const res = await fetch(url.toString(), {
     method: 'GET',
-    headers: { 'User-Agent': 'StarIPTV-Panel/2.4.1' },
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
     signal: AbortSignal.timeout(20_000),
   })
   if (!res.ok) {
