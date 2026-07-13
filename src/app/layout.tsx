@@ -16,23 +16,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "MaGx World Super IPTV — Reseller Panel",
-  description: "MaGx World Super IPTV reseller panel. Add funds, manage IPTV lines, browse 18,000+ channels and automate payments.",
-  keywords: ["MaGx", "IPTV", "reseller panel", "funds", "JazzCash", "Easypaisa", "USDT", "Bank Alfalah", "Super IPTV"],
+  description: "MaGx World Super IPTV reseller panel. Add funds, manage IPTV lines, browse 30,000+ channels and automate payments.",
+  keywords: ["MaGx", "IPTV", "reseller panel", "funds", "JazzCash", "Easypaisa", "USDT", "Bank Alfalah", "Super IPTV", "magxtv"],
   authors: [{ name: "MaGx World Super IPTV" }],
   icons: {
     icon: "/magx-icon.png",
     apple: "/magx-icon.png",
   },
+  metadataBase: new URL("https://magxtv.click"),
   openGraph: {
     title: "MaGx World Super IPTV — Reseller Panel",
-    description: "Reseller funds, IPTV lines, 18,000+ channels, and payment automation.",
+    description: "Reseller funds, IPTV lines, 30,000+ channels, and payment automation.",
+    url: "https://magxtv.click",
     siteName: "MaGx World Super IPTV",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "MaGx World Super IPTV — Reseller Panel",
-    description: "Reseller funds, IPTV lines, 18,000+ channels, and payment automation.",
+    description: "Reseller funds, IPTV lines, 30,000+ channels, and payment automation.",
   },
 };
 

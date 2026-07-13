@@ -1,12 +1,16 @@
 User-agent: *
 Allow: /
 Allow: /?view=storefront
+Allow: /?view=live
+Allow: /?view=movies
+Allow: /?view=series
 Disallow: /?view=admin
 Disallow: /?view=funds
 Disallow: /?view=orders
 Disallow: /?view=lines
 Disallow: /?view=settings
+Disallow: /?view=vpn
 Disallow: /api/
 
-# Store Front is indexable; admin + private views are not
-Sitemap: /sitemap.xml
+# Store Front + content views are indexable; admin + private views are not
+Sitemap: https://magxtv.click/sitemap.xml
